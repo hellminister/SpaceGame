@@ -13,7 +13,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.net.URL;
 import java.util.Map.Entry;
 import java.util.TreeMap;
 import java.util.logging.Level;
@@ -32,7 +31,6 @@ public class PlayerList {
     private static final String PATH_URL = "src/resources/saves/";
     private static final String FILE_NAME = "playerList.txt";
     
-  //  private final String pathName;
     
     private TreeMap<String, String> playerListMap;
     
@@ -51,10 +49,6 @@ public class PlayerList {
         nextNewPlayerNumber = 1;
         
         String file_url = PATH_URL + FILE_NAME;
-        
-        ClassLoader classLoader = getClass().getClassLoader();
-        URL path = classLoader.getResource(file_url);
-//        pathName = path.getFile();
         
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file_url)))){
@@ -93,7 +87,7 @@ public class PlayerList {
         currentPlayerSaves = new Saves(saveFolder);
     }
     
-    public void createPlayer(String name){
+    public void createPlayer(GameState newPlayer){
         String num = Integer.toString(nextNewPlayerNumber);
         nextNewPlayerNumber++;
         int nbZero = 3-num.length();
@@ -103,11 +97,12 @@ public class PlayerList {
         }
         saveFolder+=num;
         
-        currentPlayer = name;
+        currentPlayer = newPlayer.getFullName();
         currentPlayerSaves = new Saves(saveFolder, true);
-        playerListMap.put(name, saveFolder);
+        playerListMap.put(currentPlayer, saveFolder);
         
         saveData();
+        currentPlayerSaves.save(newPlayer);
         
         playerList = FXCollections.observableArrayList(playerListMap.navigableKeySet());
      }
@@ -153,6 +148,11 @@ public class PlayerList {
     }
 
     public GameState load() {
+        if (currentPlayerSaves != null){
         return currentPlayerSaves.load();
+        }
+        else {
+            return null;
+        }
     }
 }

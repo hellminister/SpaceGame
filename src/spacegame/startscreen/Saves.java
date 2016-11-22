@@ -6,8 +6,18 @@
 package spacegame.startscreen;
 
 import com.sun.javafx.collections.ObservableListWrapper;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.CopyOption;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -38,20 +48,10 @@ class Saves {
     private ObservableList<String> saveList;
 
     Saves(String saveFolder) {
-        saveList = new ObservableListWrapper<>(new LinkedList<>());
-currentFilePath = PATH_URL + saveFolder + "/";
-            try {
-                List<String> fileList = Files.list(Paths.get(currentFilePath)).map((t) -> {
-                    return t.toFile().getName();
-                }).filter((t) -> {
-                    return t.endsWith(".sav"); //To change body of generated lambdas, choose Tools | Templates.
-                }).collect(Collectors.toList());
-                LOG.finest(fileList::toString);
-                saveList = new ObservableListWrapper<>(fileList);
-            } catch (IOException ex) {
-                Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
-            }
+        currentFilePath = PATH_URL + saveFolder + "/";
+        reloadSaveList();
     }
+        
 
     Saves(String saveFolder, boolean b) {
         currentFilePath = PATH_URL + saveFolder + "/";
@@ -62,31 +62,73 @@ currentFilePath = PATH_URL + saveFolder + "/";
                 Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
             }
         } else {
-            
+
         }
     }
-
+    
+    private void reloadSaveList(){
+        saveList = new ObservableListWrapper<>(new LinkedList<>());
+        
+        try {
+            List<String> fileList = Files.list(Paths.get(currentFilePath)).map((t) -> {
+                return t.toFile().getName();
+            }).filter((t) -> {
+                return t.endsWith(".sav"); //To change body of generated lambdas, choose Tools | Templates.
+            }).collect(Collectors.toList());
+            LOG.finest(fileList::toString);
+            saveList = new ObservableListWrapper<>(fileList);
+        } catch (IOException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
 
     ObservableList<String> getSavesList() {
         return saveList;
     }
 
-    // have this return a GameState
     GameState loadSavedGame(String fileName) {
-        return new GameState();
+        String filePath = currentFilePath + fileName;
+        try (
+                InputStream file = new FileInputStream(filePath);
+      InputStream buffer = new BufferedInputStream(file);
+      ObjectInput input = new ObjectInputStream (buffer);) {
+            GameState gs = (GameState) input.readObject();
+            return gs;
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null; // this should crash the game...
     }
 
     private static final Logger LOG = Logger.getLogger(Saves.class.getName());
 
     GameState load() {
-        return loadSavedGame(currentFilePath + RECENT_SAVE);
+        return loadSavedGame(RECENT_SAVE);
     }
 
     void save(String saveName, GameState playerInfo) {
-        
+        String fileName = currentFilePath + saveName;
+        try (
+                OutputStream file = new FileOutputStream(fileName);
+                OutputStream buffer = new BufferedOutputStream(file);
+                ObjectOutput output = new ObjectOutputStream(buffer);) {
+            output.writeObject(playerInfo);
+            reloadSaveList();
+
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
-    
-    void save(GameState playerInfo){
+
+    void save(GameState playerInfo) {
         doBackUps(PREVIOUS_SAVE_2, PREVIOUS_SAVE_3);
         doBackUps(PREVIOUS_SAVE_1, PREVIOUS_SAVE_2);
         doBackUps(RECENT_SAVE, PREVIOUS_SAVE_1);

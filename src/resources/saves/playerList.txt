@@ -1,2 +1,3 @@
-001 "test" r
-2
+002 "Fire Moon" r
+001 "Star Bird"
+3
