@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world;
+package spacegame.world.player;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -29,6 +29,8 @@ public class PlayerInfo implements Serializable{
     private Species species;
     private Gender gender;
     private Stardate currentDate;
+    
+    private String currentSystem;
 
     public PlayerInfo(String name, String first_name, Species species, Gender gender) {
         this.name = name;
@@ -36,6 +38,7 @@ public class PlayerInfo implements Serializable{
         this.species = species;
         this.gender = gender;
         currentDate = new Stardate();
+        currentSystem = "test";
     }
     
         private void writeObject(ObjectOutputStream s) throws IOException{
@@ -46,6 +49,7 @@ public class PlayerInfo implements Serializable{
         s.writeObject(species);
         s.writeObject(gender);
         s.writeObject(currentDate);
+        s.writeUTF(currentSystem);
     }
     
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException{
@@ -56,15 +60,22 @@ public class PlayerInfo implements Serializable{
         species = (Species) s.readObject();
         gender = (Gender) s.readObject();
         currentDate = (Stardate) s.readObject();
+        currentSystem = s.readUTF();
     }
 
     public String getInfo() {
-        return first_name + " " + name + "\n" + gender + " " + species + "\n" + currentDate.toString();
+        return first_name + " " + name + "\n" + gender + " " + species + "\n" + "In System : " + currentSystem + "\n" +currentDate.toString();
     }
 
     public String getFullName() {
         return first_name + " " + name;
     }
     
+    public String getCurrentSystem(){
+        return currentSystem;
+    }
     
+    public void setCurrentSystem(String system){
+        currentSystem = system;
+    }
 }

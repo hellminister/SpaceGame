@@ -5,6 +5,7 @@
  */
 package spacegame.world;
 
+import spacegame.world.player.PlayerInfo;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,10 +32,6 @@ public class GameState implements Serializable{
         this.playerInfo = playerInfo;
     }
     
-    //temporary, will have to be delete
-    public GameState(){
-        
-    }
     
     public String getInfo() {
         return playerInfo.getInfo();
@@ -50,11 +47,15 @@ public class GameState implements Serializable{
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException{
         s.defaultReadObject();
         
-        playerInfo = (PlayerInfo) s.readObject();
+        playerInfo = (spacegame.world.player.PlayerInfo) s.readObject();
     }
 
     public String getFullName() {
         return playerInfo.getFullName();
+    }
+
+    public PlayerInfo getPlayerState() {
+        return playerInfo;
     }
 
 }

@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.startscreen;
+package spacegame.userinterfaces.startscreen;
 
 import com.sun.javafx.collections.ObservableListWrapper;
 import java.io.BufferedInputStream;
@@ -20,6 +20,7 @@ import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -93,7 +94,7 @@ class Saves {
                 InputStream file = new FileInputStream(filePath);
       InputStream buffer = new BufferedInputStream(file);
       ObjectInput input = new ObjectInputStream (buffer);) {
-            GameState gs = (GameState) input.readObject();
+            GameState gs = (spacegame.world.GameState) input.readObject();
             return gs;
 
         } catch (FileNotFoundException ex) {
@@ -139,10 +140,12 @@ class Saves {
         try {
             Path old = Paths.get(currentFilePath + from);
             Files.move(old, old.resolveSibling(to), StandardCopyOption.REPLACE_EXISTING);
+        } catch (NoSuchFileException ex){
+            LOG.log(Level.INFO, "No file to Backup", ex);
         } catch (IOException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         } catch (InvalidPathException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.WARNING, null, ex);
+            LOG.log(Level.WARNING, null, ex);
         }
     }
 

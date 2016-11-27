@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.startscreen;
+package spacegame.userinterfaces.startscreen;
 
 import java.util.Optional;
 import javafx.geometry.Pos;
@@ -16,9 +16,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.StageStyle;
 import spacegame.world.GameState;
-import spacegame.world.Gender;
-import spacegame.world.PlayerInfo;
-import spacegame.world.Species;
+import spacegame.world.player.Gender;
+import spacegame.world.player.PlayerInfo;
+import spacegame.world.player.Species;
 
 /**
  *

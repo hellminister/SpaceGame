@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.startscreen;
+package spacegame.userinterfaces.startscreen;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,7 +40,7 @@ public class PlayerList {
     
     private int nextNewPlayerNumber;
     
-    private ObservableList<String> playerList;
+    private final ObservableList<String> playerList;
     
     public PlayerList(){
         
@@ -85,6 +85,8 @@ public class PlayerList {
     public void selectPlayer(String playerName){
         String saveFolder = playerListMap.get(playerName);
         currentPlayerSaves = new Saves(saveFolder);
+        currentPlayer = playerName;
+        saveData();
     }
     
     public void createPlayer(GameState newPlayer){
@@ -104,7 +106,7 @@ public class PlayerList {
         saveData();
         currentPlayerSaves.save(newPlayer);
         
-        playerList = FXCollections.observableArrayList(playerListMap.navigableKeySet());
+        playerList.setAll(playerListMap.navigableKeySet());
      }
     
     public boolean nameExists(String name){

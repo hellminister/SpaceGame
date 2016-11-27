@@ -1,3 +1,2 @@
-002 "Fire Moon" r
-001 "Star Bird"
-3
+001 "Star Bird" r
+2

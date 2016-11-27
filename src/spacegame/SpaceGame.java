@@ -5,11 +5,13 @@
  */
 package spacegame;
 
-import spacegame.startscreen.StartScreen;
+import spacegame.userinterfaces.startscreen.StartScreen;
 import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
+import spacegame.userinterfaces.systemscreen.SystemScreen;
+import spacegame.world.GameState;
+import spacegame.world.GameWorld;
 
 /**
  *
@@ -24,21 +26,38 @@ public class SpaceGame extends Application {
     }
 
     private StartScreen startScreen;
+    
+    private SystemScreen systemScreen;
+    
+    private GameWorld gameWorld;
+    
+    private Stage stage;
 
     @Override
     public void start(Stage primaryStage) {
+        stage = primaryStage;
+        
+        gameWorld = new GameWorld();
 
-        startScreen = new StartScreen(true, true);
-        Scene scene = new Scene(startScreen.getStartScreenRootPane());
+        startScreen = new StartScreen(true, true, this);
+        systemScreen = new SystemScreen(this);
+        
 
-        primaryStage.setTitle("My magic space game (find a better title)!");
-        primaryStage.setScene(scene);
-        primaryStage.sizeToScene();
+        stage.setTitle("My magic space game (find a better title)!");
+        stage.setScene(startScreen);
+        stage.sizeToScene();
 
-        primaryStage.show();
+        stage.show();
 
-        primaryStage.setMinHeight(primaryStage.getHeight());
-        primaryStage.setMinWidth(primaryStage.getWidth());
+        stage.setMinHeight(primaryStage.getHeight());
+        stage.setMinWidth(primaryStage.getWidth());
+        
+        stage.setScene(systemScreen);
+        
+        systemScreen.finishBindings();
+        
+        stage.setScene(startScreen);
+        
     }
 
     /**
@@ -46,6 +65,28 @@ public class SpaceGame extends Application {
      */
     public static void main(String[] args) {
         launch(args);
+    }
+
+    public void setPlayerState(GameState gameData) {
+        gameWorld.setPlayerState(gameData);
+    }
+
+    public GameState getPlayerState() {
+        return gameWorld.getPlayerState();
+    }
+
+    public boolean changeSceneToSystemScreen() {
+        systemScreen.loadSystem(gameWorld.getSystem());
+        
+        stage.setScene(systemScreen);
+        
+        return true;
+    }
+    
+    public boolean changeSceneToStartScreen() {
+        stage.setScene(startScreen);
+        
+        return true;
     }
 
 }
