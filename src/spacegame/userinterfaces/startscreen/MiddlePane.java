@@ -26,7 +26,7 @@ import spacegame.world.player.Species;
  */
 public class MiddlePane {
 
-    private VBox middlePane;
+    private VBox mainPane;
 
     private ListView<String> infoBox2;
     private Button newPlayer;
@@ -45,16 +45,16 @@ public class MiddlePane {
         userAnswer = new TextInputDialog();
         userAnswer.setHeaderText(null);
         userAnswer.initStyle(StageStyle.UNDECORATED);
-        
-                playerList = new PlayerList();
-                
-                createMiddlePane();
+
+        playerList = new PlayerList();
+
+        createMiddlePane();
 
     }
 
     private void createMiddlePane() {
-        middlePane = new VBox(12);
-        middlePane.setAlignment(Pos.CENTER);
+        mainPane = new VBox(12);
+        mainPane.setAlignment(Pos.CENTER);
 
         infoBox2 = new ListView<>();
         infoBox2.setEditable(false);
@@ -64,7 +64,7 @@ public class MiddlePane {
         infoBox2.setStyle("-fx-background-color: grey");
         infoBox2.setEditable(false);
 
-        middlePane.getChildren().add(infoBox2);
+        mainPane.getChildren().add(infoBox2);
 
         HBox middlePaneButtons = new HBox(10);
         middlePaneButtons.setAlignment(Pos.CENTER);
@@ -79,7 +79,7 @@ public class MiddlePane {
             if (selected != null && !selected.isEmpty()) {
                 playerList.selectPlayer(selected);
                 startScreen.setPlayerInfo(playerList.load());
-                
+
             }
         });
 
@@ -99,11 +99,11 @@ public class MiddlePane {
         close.setText("Close");
         setMiddleButtonSizings(close);
         close.setOnAction(event -> {
-            middlePane.setVisible(false);
+            mainPane.setVisible(false);
         });
 
         middlePaneButtons.getChildren().addAll(selectButtons, close);
-        middlePane.getChildren().add(middlePaneButtons);
+        mainPane.getChildren().add(middlePaneButtons);
 
         StackPane switchButton = new StackPane();
 
@@ -129,29 +129,30 @@ public class MiddlePane {
 
         switchButton.getChildren().add(saveButton);
 
-        middlePane.getChildren().add(switchButton);
+        mainPane.getChildren().add(switchButton);
 
-        middlePane.setVisible(false);
+        mainPane.setVisible(false);
     }
 
     private void createPlayer() {
-        String first_name = getAnswer("What is your first name?");
+        String firstName = getAnswer("What is your first name?");
         String name = getAnswer("What is you last name");
-        Gender gender = Gender.valueOf(getAnswer("What is your gender? (Male Female Neuter)"));
-        Species species = Species.valueOf(getAnswer("What is your species? (Human)"));
-        
-        PlayerInfo newPlayer = new PlayerInfo(name, first_name, species, gender);
-        GameState newGame = new GameState(newPlayer);
-        
+        Gender gender = Gender.valueOf(getAnswer("What is your gender? (Male Female Neuter)").toUpperCase());
+        Species species = Species.valueOf(getAnswer("What is your species? (Human)").toUpperCase());
+
+        PlayerInfo newPlayerInfo = new PlayerInfo(name, firstName, species, gender);
+        GameState newGame = new GameState(newPlayerInfo);
+
         playerList.createPlayer(newGame);
     }
-    
+
     /**
      * will need to refactor this for integrity checks.....
+     *
      * @param question
-     * @return 
+     * @return
      */
-    private String getAnswer(String question){
+    private String getAnswer(String question) {
         userAnswer.setContentText(question);
         userAnswer.getEditor().clear();
         Optional<String> result = userAnswer.showAndWait();
@@ -172,11 +173,11 @@ public class MiddlePane {
     }
 
     private String getnewSaveGameName() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return getAnswer("Enter new save name");
     }
 
     public Node getRootPane() {
-        return middlePane;
+        return mainPane;
     }
 
     public GameState load() {
@@ -184,28 +185,28 @@ public class MiddlePane {
     }
 
     public void hide() {
-        middlePane.setVisible(false);
+        mainPane.setVisible(false);
     }
 
     void showForChoosePlayer() {
-        middlePane.setVisible(true);
-            saveButton.setVisible(false);
-            newPlayer.setVisible(true);
-            acLoadGame.setVisible(false);
-            selectPlayer.setVisible(true);
-            infoBox2.setItems(playerList.getPlayerList());
+        mainPane.setVisible(true);
+        saveButton.setVisible(false);
+        newPlayer.setVisible(true);
+        acLoadGame.setVisible(false);
+        selectPlayer.setVisible(true);
+        infoBox2.setItems(playerList.getPlayerList());
     }
 
     void showForLoadGame(boolean gameStarted) {
-            middlePane.setVisible(true);
-            newPlayer.setVisible(false);
-            if (gameStarted) {
-                saveButton.setVisible(true);
-            } else {
-                saveButton.setVisible(false);
-            }
-            selectPlayer.setVisible(false);
-            acLoadGame.setVisible(true);
-            infoBox2.setItems(playerList.getSaveList());
+        mainPane.setVisible(true);
+        newPlayer.setVisible(false);
+        if (gameStarted) {
+            saveButton.setVisible(true);
+        } else {
+            saveButton.setVisible(false);
+        }
+        selectPlayer.setVisible(false);
+        acLoadGame.setVisible(true);
+        infoBox2.setItems(playerList.getSaveList());
     }
 }

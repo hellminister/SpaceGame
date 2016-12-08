@@ -20,28 +20,25 @@ import spacegame.world.GameWorld;
 public class SpaceGame extends Application {
 
     private static final Logger LOG = Logger.getLogger(SpaceGame.class.getName());
-    
-    static {
-        
-    }
 
-    private StartScreen startScreen;
-    
-    private SystemScreen systemScreen;
-    
-    private GameWorld gameWorld;
-    
+    private final StartScreen startScreen;
+
+    private final SystemScreen systemScreen;
+
+    private final GameWorld gameWorld;
+
     private Stage stage;
 
-    @Override
-    public void start(Stage primaryStage) {
-        stage = primaryStage;
-        
+    public SpaceGame() {
         gameWorld = new GameWorld();
 
         startScreen = new StartScreen(true, true, this);
         systemScreen = new SystemScreen(this);
-        
+    }
+
+    @Override
+    public void start(Stage primaryStage) {
+        stage = primaryStage;
 
         stage.setTitle("My magic space game (find a better title)!");
         stage.setScene(startScreen);
@@ -51,13 +48,13 @@ public class SpaceGame extends Application {
 
         stage.setMinHeight(primaryStage.getHeight());
         stage.setMinWidth(primaryStage.getWidth());
-        
+
         stage.setScene(systemScreen);
-        
+
         systemScreen.finishBindings();
-        
+
         stage.setScene(startScreen);
-        
+
     }
 
     /**
@@ -77,15 +74,15 @@ public class SpaceGame extends Application {
 
     public boolean changeSceneToSystemScreen() {
         systemScreen.loadSystem(gameWorld.getSystem());
-        
+
         stage.setScene(systemScreen);
-        
+
         return true;
     }
-    
+
     public boolean changeSceneToStartScreen() {
         stage.setScene(startScreen);
-        
+
         return true;
     }
 

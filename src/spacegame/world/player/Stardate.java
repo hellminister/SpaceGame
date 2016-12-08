@@ -22,14 +22,14 @@ public class Stardate implements Serializable {
 
     private long date;
 
-    public Stardate(){
+    public Stardate() {
         this(1);
     }
-    
-    public Stardate(long date){
+
+    public Stardate(long date) {
         this.date = date;
     }
-    
+
     private void writeObject(ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();
 
@@ -41,11 +41,10 @@ public class Stardate implements Serializable {
 
         date = s.readLong();
     }
-    
+
     @Override
-    public String toString(){
+    public String toString() {
         return Long.toString(date);
     }
-    
 
 }

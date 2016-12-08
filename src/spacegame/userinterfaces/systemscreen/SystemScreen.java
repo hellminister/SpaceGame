@@ -31,16 +31,18 @@ import spacegame.world.systems.BubbleSystem;
  */
 public class SystemScreen extends Scene {
 
+    private static final Logger LOG = Logger.getLogger(SystemScreen.class.getName());
     private static final String BACK_IMAGE_TILE_FILE_PATH = "/resources/images/tiles/1.jpg";
+    private static final double DIMENSION = 10000;
 
-    private ScrollPane viewport;
-    private StackPane fullSystemArea;
-    private Canvas sizing;
+    private final ScrollPane viewport;
+    private final StackPane fullSystemArea;
+    private final Canvas sizing;
 
     private Image backgroundTile;
     private BackgroundImage backgroundImage;
 
-    private AnchorPane userInterface;
+    private final AnchorPane userInterface;
 
     private final StackPane root;
 
@@ -65,12 +67,17 @@ public class SystemScreen extends Scene {
         fullSystemArea = new StackPane();
 
         fullSystemArea.setBackground(new Background(backgroundImage));
-        sizing = new Canvas(5000, 5000);
+        sizing = new Canvas(DIMENSION, DIMENSION);
+
+        fullSystemArea.maxHeightProperty().bind(sizing.heightProperty());
+        fullSystemArea.maxWidthProperty().bind(sizing.widthProperty());
 
         viewport = new ScrollPane(fullSystemArea) {
             @Override
-            public void requestFocus() { }
+            public void requestFocus() {
+                /* so theres no focus */ }
         };
+
         viewport.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
         viewport.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
@@ -94,18 +101,17 @@ public class SystemScreen extends Scene {
         Node nShip = ship.draw();
 
         fullSystemArea.getChildren().add(nShip);
-        
 
         this.setOnKeyPressed(e -> {
-            switch (e.getCode()){
+            switch (e.getCode()) {
                 case RIGHT:
-                    ship.addAngle(2.0);
+                    ship.turnRight();
                     break;
                 case LEFT:
-                    ship.addAngle(-2.0);
+                    ship.turnLeft();
                     break;
                 case UP:
-                    ship.setAcc(-0.1);
+                    ship.accelerate();
                     break;
                 case DOWN:
                     ship.reverseDirection();
@@ -114,11 +120,11 @@ public class SystemScreen extends Scene {
                     break;
             }
         });
-        
+
         this.setOnKeyReleased(e -> {
-            switch (e.getCode()){
+            switch (e.getCode()) {
                 case UP:
-                    ship.setAcc(0.0);
+                    ship.stopAccelerate();
                     break;
                 case X:
                     mainTheater.changeSceneToStartScreen();
@@ -132,11 +138,13 @@ public class SystemScreen extends Scene {
     }
 
     public void finishBindings() {
-        DoublePropertyBase halfY = (new SimpleDoubleProperty());
-        halfY.bind(viewport.heightProperty().multiply(-1).add(sizing.getHeight()));
+        DoublePropertyBase halfY = new SimpleDoubleProperty();
 
-        DoublePropertyBase halfX = (new SimpleDoubleProperty());
-        halfX.bind(viewport.widthProperty().multiply(-1).add(sizing.getWidth()));
+        halfY.bind(fullSystemArea.heightProperty().subtract(viewport.heightProperty()));
+
+        DoublePropertyBase halfX = new SimpleDoubleProperty();
+
+        halfX.bind(fullSystemArea.widthProperty().subtract(viewport.widthProperty()));
 
         viewport.vvalueProperty().bind(ship.getNode().translateYProperty().divide(halfY).add(0.5d));
         viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(0.5d));
@@ -156,16 +164,17 @@ public class SystemScreen extends Scene {
         fullSystemArea.getChildren().add(systemPane);
     }
 
-    private void moveSprites() {
+    public void moveSprites() {
         ship.updatePosition();
     }
 
     private static class SceneAnimator extends AnimationTimer {
 
+        private static final int NANOSECONDS_IN_A_SECOND = 1000000000;
         private SystemScreen toAnimate;
-        
-        private long last = 0;
-        private int nbFrame = 0;
+
+        private long last;
+        private int nbFrame;
 
         public SceneAnimator(SystemScreen ta) {
             toAnimate = ta;
@@ -174,16 +183,15 @@ public class SystemScreen extends Scene {
         @Override
         public void handle(long now) {
             toAnimate.moveSprites();
-            
+
             nbFrame++;
-            long secs = now-last;
-            if (secs > 1000000000){
+            long secs = now - last;
+            if (secs > NANOSECONDS_IN_A_SECOND) {
                 last = now;
-                LOG.info((double)secs/1000000000 + " fps" + nbFrame);
+                LOG.info((double) secs / NANOSECONDS_IN_A_SECOND + " fps" + nbFrame);
                 nbFrame = 0;
             }
         }
     }
-    private static final Logger LOG = Logger.getLogger(SystemScreen.class.getName());
 
 }

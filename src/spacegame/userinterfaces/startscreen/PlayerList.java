@@ -8,7 +8,6 @@ package spacegame.userinterfaces.startscreen;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,134 +25,113 @@ import spacegame.world.GameState;
  * @author user
  */
 public class PlayerList {
-    
+
     private static final Logger LOG = Logger.getLogger(PlayerList.class.getName());
     private static final String PATH_URL = "src/resources/saves/";
     private static final String FILE_NAME = "playerList.txt";
-    
-    
+
     private TreeMap<String, String> playerListMap;
-    
+
     private String currentPlayer;
-    
+
     private Saves currentPlayerSaves;
-    
+
     private int nextNewPlayerNumber;
-    
-    private final ObservableList<String> playerList;
-    
-    public PlayerList(){
-        
+
+    private final ObservableList<String> listOfPlayers;
+
+    public PlayerList() {
+
         // Using a tree map to order the player's name alphabetically
         playerListMap = new TreeMap<>();
         nextNewPlayerNumber = 1;
-        
-        String file_url = PATH_URL + FILE_NAME;
-        
-        
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file_url)))){
+
+        String fileUrl = PATH_URL + FILE_NAME;
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(fileUrl)))) {
             String line = reader.readLine();
-            while (line != null){
+            nextNewPlayerNumber = Integer.valueOf(line);
+            line = reader.readLine();
+            while (line != null) {
                 String[] parts = line.split(" \\\"|\\\" ?");
-                
-                switch (parts.length) {
-                    case 1:
-                        nextNewPlayerNumber = Integer.valueOf(parts[0]);
-                        break;
-                    case 3:
-                        currentPlayer = parts[1];
-                        currentPlayerSaves = new Saves(parts[0]);
-                    case 2:
-                        playerListMap.put(parts[1], parts[0]);
-                        break;
-                    default:
-                        LOG.log(Level.WARNING, "Bad line in player list file : {0}", line);
-                        break;
+
+                playerListMap.put(parts[1], parts[0]);
+                if (parts.length > 2){
+                    currentPlayer = parts[1];
+                    currentPlayerSaves = new Saves(parts[0]);
                 }
-                
+
                 line = reader.readLine();
             }
-        } catch (FileNotFoundException ex) {
-            LOG.log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
         }
-        
-        playerList = FXCollections.observableArrayList(playerListMap.navigableKeySet());
+
+        listOfPlayers = FXCollections.observableArrayList(playerListMap.navigableKeySet());
     }
-    
-    public void selectPlayer(String playerName){
+
+    public void selectPlayer(String playerName) {
         String saveFolder = playerListMap.get(playerName);
         currentPlayerSaves = new Saves(saveFolder);
         currentPlayer = playerName;
         saveData();
     }
-    
-    public void createPlayer(GameState newPlayer){
-        String num = Integer.toString(nextNewPlayerNumber);
+
+    public void createPlayer(GameState newPlayer) {
+        String saveFolder = String.format("%03d", nextNewPlayerNumber); 
+        
         nextNewPlayerNumber++;
-        int nbZero = 3-num.length();
-        String saveFolder = "";
-        for (int i = 0; i < nbZero; i++){
-            saveFolder+="0";
-        }
-        saveFolder+=num;
-        
+
         currentPlayer = newPlayer.getFullName();
-        currentPlayerSaves = new Saves(saveFolder, true);
+        currentPlayerSaves = Saves.createSaveFolder(saveFolder);
         playerListMap.put(currentPlayer, saveFolder);
-        
+
         saveData();
         currentPlayerSaves.save(newPlayer);
-        
-        playerList.setAll(playerListMap.navigableKeySet());
-     }
-    
-    public boolean nameExists(String name){
+
+        listOfPlayers.setAll(playerListMap.navigableKeySet());
+    }
+
+    public boolean nameExists(String name) {
         return playerListMap.containsKey(name);
     }
 
     private void saveData() {
-        String file_url = PATH_URL + FILE_NAME;
-        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file_url)))){
+        String fileUrl = PATH_URL + FILE_NAME;
+        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileUrl)))) {
             String treating;
-            bw.write("");
-            for (Entry<String, String> me : playerListMap.entrySet()){
+            bw.write(Integer.toString(nextNewPlayerNumber) + "\n");
+            for (Entry<String, String> me : playerListMap.entrySet()) {
                 treating = me.getKey();
                 String toSave = me.getValue() + " \"" + treating + "\"" + (treating.equals(currentPlayer) ? " r" : "") + "\n";
                 bw.append(toSave);
             }
-            bw.append(Integer.toString(nextNewPlayerNumber) + "\n");
             bw.flush();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(PlayerList.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
-            Logger.getLogger(PlayerList.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
-    
-    public ObservableList<String> getPlayerList(){
-        return playerList;
+
+    public ObservableList<String> getPlayerList() {
+        return listOfPlayers;
     }
-    
+
     public ObservableList<String> getSaveList() {
         return currentPlayerSaves.getSavesList();
     }
-    
-    public GameState loadSavedGame(String fileName){
+
+    public GameState loadSavedGame(String fileName) {
         return currentPlayerSaves.loadSavedGame(fileName);
     }
-    
 
     public void saveGame(String saveName, GameState playerInfo) {
         currentPlayerSaves.save(saveName, playerInfo);
     }
 
     public GameState load() {
-        if (currentPlayerSaves != null){
-        return currentPlayerSaves.load();
-        }
-        else {
+        if (currentPlayerSaves != null) {
+            return currentPlayerSaves.load();
+        } else {
             return null;
         }
     }

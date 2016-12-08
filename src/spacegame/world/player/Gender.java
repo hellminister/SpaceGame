@@ -10,8 +10,8 @@ package spacegame.world.player;
  * @author user
  */
 public enum Gender {
-    Male,
-    Female,
-    Neuter,
+    MALE,
+    FEMALE,
+    NEUTER,
     ;
 }

@@ -1,0 +1,16 @@
+:contains1:s1
+:contains2:p1
+s1:class:Star
+s1:size:50
+s1:intensity:STRONG
+s1:type:TECHNOLOGICAL
+p1:class:Planet
+p1:orbit:200
+p1:size:25
+p1:habitability:HABITED
+p1:building1:SPACE_PORT
+p1:building2:BANK
+p1:building3:RESOURCE_STORE
+p1:building4:SHIPYARD
+p1:building5:HIRING_BUREAU
+p1:building6:OUTFIT_STORE

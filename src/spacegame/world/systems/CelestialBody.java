@@ -5,10 +5,28 @@
  */
 package spacegame.world.systems;
 
+import javafx.scene.Node;
+
 /**
  *
  * @author user
  */
-public class CelestialBody {
+public abstract class CelestialBody {
+    
+    protected final String id;
+    protected Node sprite;
+
+    public CelestialBody(String id) {
+        this.id = id;
+    }
+    
+    public final Node getSprite(){
+        if (sprite == null){
+            createSprite();
+        }
+        return sprite;
+    }
+
+    protected abstract void createSprite();
     
 }

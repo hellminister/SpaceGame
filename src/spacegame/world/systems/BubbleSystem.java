@@ -5,11 +5,14 @@
  */
 package spacegame.world.systems;
 
-import java.awt.Paint;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -19,24 +22,35 @@ import spacegame.userinterfaces.systemscreen.SystemScreen;
 
 /**
  * This class represents a whole system with its stars and planets
+ *
  * @author user
  */
 public class BubbleSystem {
-    
-    private static final Logger LOG = Logger.getLogger(BubbleSystem.class.getName());
-    
-    private final String systemName;
-    
-    private Star star;
-    
-    private List<CelestialBody> planets;
-    
-    private StackPane systemPane = null;
 
-    public BubbleSystem(String systemName) {
-        this.systemName = systemName;
-        planets = new LinkedList<>();
-        star = new Star();
+    private static final Logger LOG = Logger.getLogger(BubbleSystem.class.getName());
+
+    private final String systemName;
+
+    private Star star;
+
+    private final Map<CelestialBody, Integer> planets;
+
+    private StackPane systemPane;
+
+    public BubbleSystem(Map.Entry<String, Properties> t, Map<String, Properties> currentSystemState) {
+        systemName = t.getKey();
+        planets = new HashMap<>();
+        LOG.info(systemName);
+        Properties props = t.getValue();
+        LOG.info(props.stringPropertyNames().toString());
+        for (String s : props.stringPropertyNames()){
+            LOG.log(Level.INFO, "{0} {1}", new Object[]{s, props.getProperty(s)});
+            if (s.startsWith("contains")){
+                String key = systemName + "." + props.getProperty(s);
+                Properties body = currentSystemState.get(key);
+                instanciateObject(body, key);
+            }
+        }
     }
 
     public String getName() {
@@ -44,14 +58,36 @@ public class BubbleSystem {
     }
 
     public void draw(SystemScreen aThis) {
-        if (systemPane == null){
+        if (systemPane == null) {
             systemPane = new StackPane();
             systemPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
             systemPane.setPickOnBounds(false);
-            star.draw(systemPane);
+            Node suns = star.getSprite();
+            systemPane.getChildren().add(suns);
+            StackPane.setAlignment(suns, Pos.CENTER);
+            planets.forEach((t, u) -> {
+                Node body = t.getSprite();
+                body.setTranslateX(u);
+                systemPane.getChildren().add(body);
+            });
         }
         aThis.addSystem(systemPane);
     }
-    
-    
+
+    private void instanciateObject(Properties body, String id) {
+        String type = body.getProperty("class");
+        LOG.info(type);
+        switch (type) {
+            case "Star" :
+                star = new Star(body, id);
+                break;
+            case "Planet" :
+                int orbit = Integer.parseInt(body.getProperty("orbit"));
+                planets.put(new Planet(body, id), orbit);
+                break;
+            default:
+                LOG.warning(type);
+        }
+    }
+
 }

@@ -34,59 +34,61 @@ import spacegame.world.GameState;
  *
  * @author user
  */
-public class StartScreen extends Scene{
-    
+public class StartScreen extends Scene {
+
+    private static final Logger LOG = Logger.getLogger(StartScreen.class.getName());
     private static final int HEIGHT = 480;
     private static final String BACK_IMAGE_FILE_PATH = "/resources/images/PIA17563-1920x1200.jpg";
     private static final String CREDIT_FILE = "src/resources/data/credits.txt";
-    
+
     private Image background;
     private ImageView backgroundPlate;
     private Pane backgroundImagePane;
-    
+
     private Button enterGame;
     private Button choosePlayer;
     private Button loadGame;
     private Button credits;
-    
+
     private VBox mainButtons;
     private Insets padding;
-    
-    private StackPane startScreen;
-    
+
+    private StackPane mainPane;
+
     private final StackPane root;
     private TextArea infoBox;
-    
+
     private GridPane startScreenGridPane;
-    
-    private boolean gameStarted = false;
-    private SpaceGame mainTheater;
-    
+
+    private boolean gameStarted;
+    private final SpaceGame mainTheater;
+
     private MiddlePane middlePane;
-    
+
     private String creditsText;
-    
-    
+
     public StartScreen(boolean resize, boolean centering, SpaceGame aThis) {
         super(new StackPane());
-        
+
+        gameStarted = false;
+
         mainTheater = aThis;
-        
+
         root = (StackPane) this.getRoot();
         root.setStyle("-fx-background-color: black");
-        
+
         createStartScreen();
-        
+
         root.setPrefSize(backgroundPlate.getLayoutBounds().getWidth(), HEIGHT);
-        
+
         if (resize) {
             linkBackgroundSizeToRootPane();
         }
-        
-        root.getChildren().add(centering ? createCenteringPanesFor(startScreen) : new Pane(startScreen));
-        
+
+        root.getChildren().add(centering ? createCenteringPanesFor(mainPane) : new Pane(mainPane));
+
         GameState gameData = middlePane.load();
-        
+
         if (gameData == null) {
             infoBox.setText("No Players, please create a player");
         } else {
@@ -96,29 +98,29 @@ public class StartScreen extends Scene{
     }
 
     private void createStartScreen() {
-        startScreen = new StackPane();
-        startScreen.setAlignment(Pos.CENTER);
-        
+        mainPane = new StackPane();
+        mainPane.setAlignment(Pos.CENTER);
+
         loadCreditText();
-        
+
         createBackgroundImagePane();
-        startScreen.getChildren().add(backgroundImagePane);
-        
+        mainPane.getChildren().add(backgroundImagePane);
+
         createStartMenuGridPane();
-        
-        startScreen.getChildren().add(startScreenGridPane);
-        
+
+        mainPane.getChildren().add(startScreenGridPane);
+
         createButtons();
         startScreenGridPane.add(mainButtons, 0, 0);
-        
+
         createInfoBox();
         startScreenGridPane.add(infoBox, 2, 0);
-        
+
         middlePane = new MiddlePane(this);
         startScreenGridPane.add(middlePane.getRootPane(), 1, 0);
-        
+
     }
-    
+
     private void createStartMenuGridPane() {
         startScreenGridPane = new GridPane();
         ColumnConstraints column1 = new ColumnConstraints();
@@ -133,9 +135,9 @@ public class StartScreen extends Scene{
         row1.setValignment(VPos.CENTER);
         row1.setPercentHeight(100);
         startScreenGridPane.getRowConstraints().add(row1);
-        startScreenGridPane.setPrefSize(startScreen.getPrefWidth(), startScreen.getPrefHeight());
+        startScreenGridPane.setPrefSize(mainPane.getPrefWidth(), mainPane.getPrefHeight());
     }
-    
+
     private void createInfoBox() {
         infoBox = new TextArea();
         infoBox.setEditable(false);
@@ -144,51 +146,51 @@ public class StartScreen extends Scene{
         infoBox.setMaxSize(200, 330);
         infoBox.setMinSize(200, 330);
         infoBox.setTranslateX(20);
-        
+
         infoBox.setStyle("-fx-background-color: grey");
     }
-    
+
     private void createBackgroundImagePane() {
         background = new Image(BACK_IMAGE_FILE_PATH);
         backgroundPlate = new ImageView(background);
         backgroundPlate.setPreserveRatio(true);
-        
+
         backgroundPlate.setFitHeight(HEIGHT);
-        
+
         backgroundImagePane = new Pane();
         backgroundImagePane.getChildren().add(backgroundPlate);
     }
-    
+
     private void linkBackgroundSizeToRootPane() {
         backgroundPlate.fitHeightProperty().bind(root.heightProperty());
         backgroundPlate.fitWidthProperty().bind(root.widthProperty());
     }
-    
+
     private VBox createCenteringPanesFor(Pane toCenter) {
         VBox verticalCentering = new VBox();
         verticalCentering.setAlignment(Pos.CENTER);
-        
+
         HBox horizontalCentering = new HBox();
         horizontalCentering.setAlignment(Pos.CENTER);
-        
+
         verticalCentering.getChildren().add(horizontalCentering);
         horizontalCentering.getChildren().add(toCenter);
-        
+
         return verticalCentering;
     }
-    
+
     private void createButtons() {
         enterGame = new Button();
         enterGame.setText("Enter Game");
         setMainButtonSizings(enterGame);
         enterGame.setOnAction(event -> {
             // add a check to see if a gamestate is loaded
-            boolean success = mainTheater.changeSceneToSystemScreen();
-            
+            gameStarted = mainTheater.changeSceneToSystemScreen();
+
             infoBox.setText("Enter Game");
             middlePane.hide();
         });
-        
+
         choosePlayer = new Button();
         choosePlayer.setText("Choose Player");
         setMainButtonSizings(choosePlayer);
@@ -196,7 +198,7 @@ public class StartScreen extends Scene{
             infoBox.setText("Choose Player");
             middlePane.showForChoosePlayer();
         });
-        
+
         loadGame = new Button();
         loadGame.setText("Load Game");
         setMainButtonSizings(loadGame);
@@ -204,7 +206,7 @@ public class StartScreen extends Scene{
             infoBox.setText("Load Game");
             middlePane.showForLoadGame(gameStarted);
         });
-        
+
         credits = new Button();
         credits.setText("Credits");
         setMainButtonSizings(credits);
@@ -212,57 +214,54 @@ public class StartScreen extends Scene{
             infoBox.setText(creditsText);
             middlePane.hide();
         });
-        
+
         mainButtons = new VBox(12);
         padding = new Insets(0, 0, 10, 16);
         mainButtons.setPadding(padding);
         mainButtons.setAlignment(Pos.CENTER);
-        
+
         mainButtons.getChildren().addAll(enterGame, choosePlayer, loadGame, credits);
         mainButtons.setTranslateX(-10);
     }
-    
-    private static final Logger LOG = Logger.getLogger(StartScreen.class.getName());
-    
+
     private void setMainButtonSizings(Button btn) {
         btn.setMaxSize(100, 30);
         btn.setMinSize(50, 15);
         btn.setPrefSize(100, 30);
-        
+
     }
-    
+
     public Pane getStartScreenRootPane() {
         return root;
     }
-    
+
     public Pane getStartScreenPane() {
-        return startScreen;
+        return mainPane;
     }
-    
+
     private void loadCreditText() {
-        String text = "";
-        
+        StringBuilder text = new StringBuilder();
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(CREDIT_FILE)))) {
             String line = reader.readLine();
             while (line != null) {
-                text += line + "\n";
+                text.append(line).append("\n");
                 line = reader.readLine();
             }
         } catch (IOException ex) {
             Logger.getLogger(StartScreen.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
-        creditsText = text;
+
+        creditsText = text.toString();
     }
-    
+
     void setPlayerInfo(GameState load) {
         mainTheater.setPlayerState(load);
         infoBox.setText(load.getInfo());
     }
-    
+
     public GameState getPlayerInfo() {
         return mainTheater.getPlayerState();
     }
 
-    
 }

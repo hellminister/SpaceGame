@@ -12,51 +12,50 @@ import java.io.Serializable;
 import java.util.logging.Logger;
 
 /**
- * This class contains the information specific to the player
- * Examples of information to put in this file :
- * Character's names, the current game date, 
- * The character's Structures (like buildings and ships)
- * etc.
+ * This class contains the information specific to the player Examples of
+ * information to put in this file : Character's names, the current game date,
+ * The character's Structures (like buildings and ships) etc.
+ *
  * @author user
  */
-public class PlayerInfo implements Serializable{
-    
+public class PlayerInfo implements Serializable {
+
     private static final Logger LOG = Logger.getLogger(PlayerInfo.class.getName());
     private static final long serialVersionUID = 1L;
-    
+
     private String name;
-    private String first_name;
+    private String firstName;
     private Species species;
     private Gender gender;
     private Stardate currentDate;
-    
+
     private String currentSystem;
 
-    public PlayerInfo(String name, String first_name, Species species, Gender gender) {
+    public PlayerInfo(String name, String firstName, Species species, Gender gender) {
         this.name = name;
-        this.first_name = first_name;
+        this.firstName = firstName;
         this.species = species;
         this.gender = gender;
         currentDate = new Stardate();
         currentSystem = "test";
     }
-    
-        private void writeObject(ObjectOutputStream s) throws IOException{
+
+    private void writeObject(ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();
-        
+
         s.writeUTF(name);
-        s.writeUTF(first_name);
+        s.writeUTF(firstName);
         s.writeObject(species);
         s.writeObject(gender);
         s.writeObject(currentDate);
         s.writeUTF(currentSystem);
     }
-    
-    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException{
+
+    private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
-        
+
         name = s.readUTF();
-        first_name = s.readUTF();
+        firstName = s.readUTF();
         species = (Species) s.readObject();
         gender = (Gender) s.readObject();
         currentDate = (Stardate) s.readObject();
@@ -64,18 +63,18 @@ public class PlayerInfo implements Serializable{
     }
 
     public String getInfo() {
-        return first_name + " " + name + "\n" + gender + " " + species + "\n" + "In System : " + currentSystem + "\n" +currentDate.toString();
+        return firstName + " " + name + "\n" + gender + " " + species + "\n" + "In System : " + currentSystem + "\n" + currentDate.toString();
     }
 
     public String getFullName() {
-        return first_name + " " + name;
+        return firstName + " " + name;
     }
-    
-    public String getCurrentSystem(){
+
+    public String getCurrentSystem() {
         return currentSystem;
     }
-    
-    public void setCurrentSystem(String system){
+
+    public void setCurrentSystem(String system) {
         currentSystem = system;
     }
 }

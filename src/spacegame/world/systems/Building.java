@@ -3,13 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.player;
+package spacegame.world.systems;
 
 /**
  *
  * @author user
  */
-public enum Species {
-    HUMAN,
-    ;
+public enum Building {
+    SPACE_PORT,
+    BANK,
+    RESOURCE_STORE,
+    SHIPYARD,
+    HIRING_BUREAU,
+    OUTFIT_STORE;
 }

@@ -5,120 +5,143 @@
  */
 package spacegame.world.ships;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Ellipse;
-import javafx.scene.shape.Shape;
 
 /**
  *
  * @author user
  */
 public class Ship {
-    
-    private static final double ONE_DEGREE_IN_RAD;
-    private static final double TWO_PI;
-    
+
+    private static final Logger LOG = Logger.getLogger(Ship.class.getName());
+
     private static final Image rocket;
     private static final Image fire;
-    
+    private static final double TOLERANCE = 0.00001;
+    private static final double RIGHT_ANGLE = 90;
+    private static final double FULL_ANGLE = 360;
+
     static {
-        ONE_DEGREE_IN_RAD = Math.toRadians(1.0);
-        TWO_PI = Math.PI * 2;
-        
         rocket = new Image("/resources/images/ship/rocket_straight_up_no_fire.png");
         fire = new Image("/resources/images/ship/rocket_straight_up_fire.png");
     }
-    
-    private Node sprite = null;
-    GraphicsContext gc;
-    
-    private double posX;
-    private double posY;
-    
+
+    private Node sprite;
+    private GraphicsContext gc;
+
+    private final DoubleProperty posX;
+    private final DoubleProperty posY;
+
     private double speedX;
     private double speedY;
-    
-    private double acc;
-    
-    private double angle;
-    
-    public Ship(){
-        posX = 0;
-        posY = 0;
+
+    private boolean acc;
+
+    private final DoubleProperty angle;
+
+    private double accThruster;
+    private double turnSpeed;
+
+    public Ship() {
+        posX = new SimpleDoubleProperty(0.0);
+        posY = new SimpleDoubleProperty(0.0);
         speedX = 0;
         speedY = 0;
-        acc = 0;
-        
-        angle = (90);
+        acc = false;
+
+        accThruster = 0.1;
+        turnSpeed = 2.0;
+
+        angle = new SimpleDoubleProperty(RIGHT_ANGLE);
     }
-    
-    public void addAngle(double toAdd){
-        angle = (angle + (toAdd )) % 360;
+
+    private void addAngle(double toAdd) {
+        angle.set((angle.get() + toAdd) % FULL_ANGLE);
     }
-    
-    public Node draw(){
+
+    public void turnRight() {
+        addAngle(turnSpeed);
+    }
+
+    public void turnLeft() {
+        addAngle(-turnSpeed);
+    }
+
+    public Node draw() {
         sprite = new Canvas(79, 414);
-                
-        gc = ((Canvas)sprite).getGraphicsContext2D();
+
+        gc = ((Canvas) sprite).getGraphicsContext2D();
         gc.drawImage(rocket, 0, 114);
-        
-                
-        updatePosition();
+
+        sprite.translateXProperty().bind(posX);
+        sprite.translateYProperty().bind(posY);
+        sprite.rotateProperty().bind(angle.subtract(RIGHT_ANGLE));
+
+        sprite.setScaleX(0.5);
+        sprite.setScaleY(0.5);
 
         return sprite;
     }
-    
-    
-    public void updatePosition(){
-        if (acc != 0){
-            speedX += acc * Math.cos(Math.toRadians(angle));
-            speedY += acc * Math.sin(Math.toRadians(angle));
+
+    public ReadOnlyDoubleProperty posXProperty() {
+        return posX;
+    }
+
+    public ReadOnlyDoubleProperty posYProperty() {
+        return posY;
+    }
+
+    public ReadOnlyDoubleProperty angleProperty() {
+        return angle;
+    }
+
+    public void updatePosition() {
+        if (acc) {
+            speedX -= accThruster * Math.cos(Math.toRadians(angle.get()));
+            speedY -= accThruster * Math.sin(Math.toRadians(angle.get()));
         }
-        
-        posX += speedX;
-        posY += speedY;
-        
-        sprite.setTranslateX(posX);
-        sprite.setTranslateY(posY);
-        
-        sprite.setScaleX(0.5);
-        sprite.setScaleY(0.5);
-        
-        sprite.setRotate((angle)-90);
-        
+
+        posX.set(posX.get() + speedX);
+        posY.set(posY.get() + speedY);
     }
 
     public Node getNode() {
         return sprite;
     }
 
-    public void setAcc(double d) {
-        
-        if (d != 0){
-            gc.drawImage(fire, 0, 300);
-        } else {
-            gc.clearRect(0, 300, 79, (114));
-        }
-        
-        acc = d;
-    }
-    
-    public void reverseDirection(){
-        double target = (Math.round(Math.toDegrees(Math.atan2(speedY, speedX)))+360) %360;
-        
-        if (angle != target){
-            if ((target - angle) > 10){
-            addAngle(2.0);
-            } else {
-                addAngle(1.0);
-            }
-            
-        }
+    public void accelerate() {
+        gc.drawImage(fire, 0, 300);
+        acc = true;
     }
 
+    public void stopAccelerate() {
+        gc.clearRect(0, 300, 79, 114);
+        acc = false;
+    }
+
+    public void reverseDirection() {
+        double target = (Math.round(Math.toDegrees(Math.atan2(speedY, speedX))) + FULL_ANGLE) % FULL_ANGLE;
+
+        double delta = (target - angle.get()) % FULL_ANGLE;
+        double absDelta = Math.abs(delta);
+        LOG.log(Level.FINE, " target angle difference : {0}", delta);
+
+        if (absDelta > TOLERANCE) {
+            if (absDelta >= turnSpeed) {
+                turnRight();
+            } else {
+                addAngle(delta);
+            }
+
+        }
+    }
 
 }

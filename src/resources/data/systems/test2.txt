@@ -1,0 +1,10 @@
+:contains1:s2
+:contains2:p2
+s2:class:Star
+s2:size:30
+s2:intensity:FEEBLE
+s2:type:TECHNOLOGICAL
+p2:class:Planet
+p2:orbit:100
+p2:size:25
+p2:habitability:HABITABLE

@@ -1,15 +1,17 @@
 /*
+
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.player;
+package spacegame.world.systems;
 
 /**
  *
  * @author user
  */
-public enum Species {
-    HUMAN,
-    ;
+public enum Intensity {
+    STRONG,
+    AVERAGE,
+    FEEBLE;
 }

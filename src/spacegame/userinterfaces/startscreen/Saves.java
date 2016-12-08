@@ -5,11 +5,9 @@
  */
 package spacegame.userinterfaces.startscreen;
 
-import com.sun.javafx.collections.ObservableListWrapper;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,11 +22,11 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import spacegame.world.GameState;
 
@@ -36,8 +34,9 @@ import spacegame.world.GameState;
  *
  * @author user
  */
-class Saves {
+public class Saves {
 
+    private static final Logger LOG = Logger.getLogger(Saves.class.getName());
     private static final String PATH_URL = "src/resources/saves/";
     private static final String RECENT_SAVE = "recent.sav";
     private static final String PREVIOUS_SAVE_1 = "previous1.sav";
@@ -48,41 +47,36 @@ class Saves {
 
     private ObservableList<String> saveList;
 
-    Saves(String saveFolder) {
+    public Saves(String saveFolder) {
         currentFilePath = PATH_URL + saveFolder + "/";
         reloadSaveList();
     }
-        
 
-    Saves(String saveFolder, boolean b) {
-        currentFilePath = PATH_URL + saveFolder + "/";
-        if (b) {
-            try {
-                Files.createDirectory(Paths.get(currentFilePath));
-            } catch (IOException ex) {
-                Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        } else {
-
-        }
-    }
-    
-    private void reloadSaveList(){
-        saveList = new ObservableListWrapper<>(new LinkedList<>());
-        
+    public static Saves createSaveFolder(String saveFolder) {
+        String currentFilePath = PATH_URL + saveFolder + "/";
         try {
-            List<String> fileList = Files.list(Paths.get(currentFilePath)).map((t) -> {
-                return t.toFile().getName();
-            }).filter((t) -> {
-                return t.endsWith(".sav"); //To change body of generated lambdas, choose Tools | Templates.
+            Files.createDirectory(Paths.get(currentFilePath));
+        } catch (IOException ex) {
+            LOG.log(Level.SEVERE, null, ex);
+        }
+        return new Saves(saveFolder);
+
+    }
+
+    private void reloadSaveList() {
+
+        try {
+            List<String> fileList = Files.list(Paths.get(currentFilePath)).map(t -> {
+                    return t.toFile().getName();
+            }).filter(t -> {
+                    return t.endsWith(".sav");
             }).collect(Collectors.toList());
             LOG.finest(fileList::toString);
-            saveList = new ObservableListWrapper<>(fileList);
+            saveList = FXCollections.observableList(fileList);
         } catch (IOException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, null, ex);
         }
     }
-    
 
     ObservableList<String> getSavesList() {
         return saveList;
@@ -92,22 +86,15 @@ class Saves {
         String filePath = currentFilePath + fileName;
         try (
                 InputStream file = new FileInputStream(filePath);
-      InputStream buffer = new BufferedInputStream(file);
-      ObjectInput input = new ObjectInputStream (buffer);) {
-            GameState gs = (spacegame.world.GameState) input.readObject();
-            return gs;
+                InputStream buffer = new BufferedInputStream(file);
+                ObjectInput input = new ObjectInputStream(buffer);) {
+            return (spacegame.world.GameState) input.readObject();
 
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
+        } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null; // this should crash the game...
     }
-
-    private static final Logger LOG = Logger.getLogger(Saves.class.getName());
 
     GameState load() {
         return loadSavedGame(RECENT_SAVE);
@@ -122,8 +109,6 @@ class Saves {
             output.writeObject(playerInfo);
             reloadSaveList();
 
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
             Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -140,7 +125,7 @@ class Saves {
         try {
             Path old = Paths.get(currentFilePath + from);
             Files.move(old, old.resolveSibling(to), StandardCopyOption.REPLACE_EXISTING);
-        } catch (NoSuchFileException ex){
+        } catch (NoSuchFileException ex) {
             LOG.log(Level.INFO, "No file to Backup", ex);
         } catch (IOException ex) {
             LOG.log(Level.SEVERE, null, ex);
