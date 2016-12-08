@@ -7,10 +7,9 @@ package spacegame.world.systems;
 
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.geometry.Pos;
 import javafx.scene.Node;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -32,7 +31,7 @@ public class Star {
 
     Star(Properties body, String id) {
         this.id = id;
-        LOG.info("Making " + id);
+        LOG.log(Level.INFO, "Making {0}", id);
         for (Map.Entry<Object, Object> entry : body.entrySet()) {
             String key = (String) entry.getKey();
             LOG.info(key);
@@ -43,7 +42,7 @@ public class Star {
             } else if ("type".equals(key)) {
                 effectType = EffectType.valueOf((String) entry.getValue());
             } else {
-                LOG.info(key + " Not Treated");
+                LOG.log(Level.INFO, "{0} Not Treated", key);
             }
         }
     }
@@ -54,7 +53,7 @@ public class Star {
             suns.setFill(Color.YELLOW);
 
             suns.setOnMouseClicked(e -> {
-                LOG.info("spacegame.world.systems.Star.draw()");
+                LOG.log(Level.INFO, "{0} clicked!", id);
             });
             sprite = suns;
         }

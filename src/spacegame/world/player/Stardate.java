@@ -22,10 +22,17 @@ public class Stardate implements Serializable {
 
     private long date;
 
+    /**
+     * Creates a new stardate starting on the first game day
+     */
     public Stardate() {
         this(1);
     }
 
+    /**
+     * creates a new stardate starting at the specified date
+     * @param date 
+     */
     public Stardate(long date) {
         this.date = date;
     }

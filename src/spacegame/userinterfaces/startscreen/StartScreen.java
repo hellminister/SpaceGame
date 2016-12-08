@@ -67,7 +67,12 @@ public class StartScreen extends Scene {
 
     private String creditsText;
 
-    public StartScreen(boolean resize, boolean centering, SpaceGame aThis) {
+    /**
+     * Creates the components for the Start Screen
+     *
+     * @param aThis
+     */
+    public StartScreen(SpaceGame aThis) {
         super(new StackPane());
 
         gameStarted = false;
@@ -81,11 +86,9 @@ public class StartScreen extends Scene {
 
         root.setPrefSize(backgroundPlate.getLayoutBounds().getWidth(), HEIGHT);
 
-        if (resize) {
-            linkBackgroundSizeToRootPane();
-        }
+        linkBackgroundSizeToRootPane();
 
-        root.getChildren().add(centering ? createCenteringPanesFor(mainPane) : new Pane(mainPane));
+        root.getChildren().add(createCenteringPanesFor(mainPane));
 
         GameState gameData = middlePane.load();
 
@@ -255,11 +258,19 @@ public class StartScreen extends Scene {
         creditsText = text.toString();
     }
 
-    void setPlayerInfo(GameState load) {
+    /**
+     * Sets the current GameState
+     * @param load 
+     */
+    public void setPlayerInfo(GameState load) {
         mainTheater.setPlayerState(load);
         infoBox.setText(load.getInfo());
     }
 
+    /**
+     * returns the Current GameState
+     * @return 
+     */
     public GameState getPlayerInfo() {
         return mainTheater.getPlayerState();
     }

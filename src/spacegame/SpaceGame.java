@@ -29,10 +29,13 @@ public class SpaceGame extends Application {
 
     private Stage stage;
 
+    /**
+     * main game constructor that instanciates all the differents scenes
+     */
     public SpaceGame() {
         gameWorld = new GameWorld();
 
-        startScreen = new StartScreen(true, true, this);
+        startScreen = new StartScreen(this);
         systemScreen = new SystemScreen(this);
     }
 
@@ -72,6 +75,10 @@ public class SpaceGame extends Application {
         return gameWorld.getPlayerState();
     }
 
+    /**
+     * Change the current scene to the system screen scene
+     * @return 
+     */
     public boolean changeSceneToSystemScreen() {
         systemScreen.loadSystem(gameWorld.getSystem());
 
@@ -80,6 +87,10 @@ public class SpaceGame extends Application {
         return true;
     }
 
+    /**
+     * Change the current scene to the Start screen scene
+     * @return 
+     */
     public boolean changeSceneToStartScreen() {
         stage.setScene(startScreen);
 

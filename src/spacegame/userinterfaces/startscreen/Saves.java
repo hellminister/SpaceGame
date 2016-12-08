@@ -28,6 +28,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+
 import spacegame.world.GameState;
 
 /**
@@ -47,11 +48,21 @@ public class Saves {
 
     private ObservableList<String> saveList;
 
+    /**
+     * Opens the requested saves folder
+     * And extracts the save files list
+     * @param saveFolder Folders name
+     */
     public Saves(String saveFolder) {
         currentFilePath = PATH_URL + saveFolder + "/";
         reloadSaveList();
     }
 
+    /**
+     * Creates a new save folder for a new player And returns the associated Saves object
+     * @param saveFolder new Folder's name
+     * @return The associated Saves object
+     */
     public static Saves createSaveFolder(String saveFolder) {
         String currentFilePath = PATH_URL + saveFolder + "/";
         try {
@@ -78,11 +89,16 @@ public class Saves {
         }
     }
 
-    ObservableList<String> getSavesList() {
+    public ObservableList<String> getSavesList() {
         return saveList;
     }
 
-    GameState loadSavedGame(String fileName) {
+    /**
+     * Loads the requested file
+     * @param fileName the file to load
+     * @return the loaded GameState
+     */
+    public GameState loadSavedGame(String fileName) {
         String filePath = currentFilePath + fileName;
         try (
                 InputStream file = new FileInputStream(filePath);
@@ -96,11 +112,20 @@ public class Saves {
         return null; // this should crash the game...
     }
 
-    GameState load() {
+    /**
+     * Loads the recent save file
+     * @return the associated GameState
+     */
+    public GameState load() {
         return loadSavedGame(RECENT_SAVE);
     }
 
-    void save(String saveName, GameState playerInfo) {
+    /**
+     * Saves the GameState to the specified file
+     * @param saveName The name of the save file
+     * @param playerInfo The state of the game
+     */
+    public void save(String saveName, GameState playerInfo) {
         String fileName = currentFilePath + saveName;
         try (
                 OutputStream file = new FileOutputStream(fileName);
@@ -114,7 +139,11 @@ public class Saves {
         }
     }
 
-    void save(GameState playerInfo) {
+    /**
+     * saves the GameState to the recent file and keeps up to 3 backups in time
+     * @param playerInfo the GameState to save
+     */
+    public void save(GameState playerInfo) {
         doBackUps(PREVIOUS_SAVE_2, PREVIOUS_SAVE_3);
         doBackUps(PREVIOUS_SAVE_1, PREVIOUS_SAVE_2);
         doBackUps(RECENT_SAVE, PREVIOUS_SAVE_1);

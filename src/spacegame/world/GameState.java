@@ -34,6 +34,10 @@ public class GameState implements Serializable {
 
     private Map<String, Properties> systemsModifications;
 
+    /**
+     * Creates a gameState for a new player
+     * @param playerInfo 
+     */
     public GameState(PlayerInfo playerInfo) {
         this.playerInfo = playerInfo;
         systemsModifications = new HashMap<>();

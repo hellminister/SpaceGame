@@ -8,8 +8,8 @@ package spacegame.world.systems;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Properties;
+import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.Node;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
@@ -24,7 +24,12 @@ public class Planet extends CelestialBody {
     private int size;
     private Habitability habitability;
     private EnumSet<Building> building;
-        
+    
+    /**
+     * Creates the planet from the given properties
+     * @param body
+     * @param id 
+     */
     public Planet(Properties body, String id) {
         super(id);
         building = EnumSet.noneOf(Building.class);
@@ -38,7 +43,7 @@ public class Planet extends CelestialBody {
             } else if (key.startsWith("building")) {
                 building.add(Building.valueOf((String) entry.getValue()));
             } else {
-                LOG.info(key + " Not Treated");
+                LOG.log(Level.INFO, "{0} Not Treated", key);
             }
         }
     }
@@ -50,7 +55,7 @@ public class Planet extends CelestialBody {
             planet.setFill(Color.DARKGREEN);
 
             planet.setOnMouseClicked(e -> {
-                LOG.info(id + " clicked!");
+                LOG.log(Level.INFO, "{0} clicked!", id);
             });
             sprite = planet;
         }

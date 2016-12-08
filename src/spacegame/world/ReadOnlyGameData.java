@@ -32,6 +32,9 @@ public class ReadOnlyGameData {
 
     private final Map<String, Properties> systems;
 
+    /**
+     * Loads all the initial game states of the game
+     */
     public ReadOnlyGameData() {
         systems = Collections.unmodifiableMap(loadSystems());
     }

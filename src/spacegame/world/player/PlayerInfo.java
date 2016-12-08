@@ -31,6 +31,13 @@ public class PlayerInfo implements Serializable {
 
     private String currentSystem;
 
+    /**
+     * Instanciate a new player infos
+     * @param name
+     * @param firstName
+     * @param species
+     * @param gender 
+     */
     public PlayerInfo(String name, String firstName, Species species, Gender gender) {
         this.name = name;
         this.firstName = firstName;

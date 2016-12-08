@@ -26,6 +26,9 @@ public class GameWorld {
 
     private final ReadOnlyGameData initialGameState;
 
+    /**
+     * Initialize the gameWorld
+     */
     public GameWorld() {
         initialGameState = new ReadOnlyGameData();
 

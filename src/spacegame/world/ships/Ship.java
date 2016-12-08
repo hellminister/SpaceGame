@@ -17,6 +17,8 @@ import javafx.scene.image.Image;
 
 /**
  *
+ * Will need to split this class into a sprite and the ship data
+ * 
  * @author user
  */
 public class Ship {

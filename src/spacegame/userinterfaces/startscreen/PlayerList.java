@@ -40,6 +40,9 @@ public class PlayerList {
 
     private final ObservableList<String> listOfPlayers;
 
+    /**
+     * Loads the list of players for the game
+     */
     public PlayerList() {
 
         // Using a tree map to order the player's name alphabetically
@@ -70,6 +73,10 @@ public class PlayerList {
         listOfPlayers = FXCollections.observableArrayList(playerListMap.navigableKeySet());
     }
 
+    /**
+     * Load the selected player
+     * @param playerName 
+     */
     public void selectPlayer(String playerName) {
         String saveFolder = playerListMap.get(playerName);
         currentPlayerSaves = new Saves(saveFolder);
@@ -77,6 +84,10 @@ public class PlayerList {
         saveData();
     }
 
+    /**
+     * Creates a new player with the given data
+     * @param newPlayer 
+     */
     public void createPlayer(GameState newPlayer) {
         String saveFolder = String.format("%03d", nextNewPlayerNumber); 
         
@@ -92,6 +103,11 @@ public class PlayerList {
         listOfPlayers.setAll(playerListMap.navigableKeySet());
     }
 
+    /**
+     * return wether the given name already exists
+     * @param name
+     * @return 
+     */
     public boolean nameExists(String name) {
         return playerListMap.containsKey(name);
     }
@@ -120,14 +136,28 @@ public class PlayerList {
         return currentPlayerSaves.getSavesList();
     }
 
+    /**
+     * Loads the specified saved game
+     * @param fileName
+     * @return 
+     */
     public GameState loadSavedGame(String fileName) {
         return currentPlayerSaves.loadSavedGame(fileName);
     }
 
+    /**
+     * saves the game to the specified file name
+     * @param saveName
+     * @param playerInfo 
+     */
     public void saveGame(String saveName, GameState playerInfo) {
         currentPlayerSaves.save(saveName, playerInfo);
     }
 
+    /**
+     * loads the most recent game of the player
+     * @return 
+     */
     public GameState load() {
         if (currentPlayerSaves != null) {
             return currentPlayerSaves.load();

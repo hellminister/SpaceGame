@@ -16,6 +16,10 @@ public abstract class CelestialBody {
     protected final String id;
     protected Node sprite;
 
+    /**
+     * Sets the id of this Celestial Body
+     * @param id 
+     */
     public CelestialBody(String id) {
         this.id = id;
     }

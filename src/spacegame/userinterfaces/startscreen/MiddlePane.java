@@ -39,6 +39,10 @@ public class MiddlePane {
     private PlayerList playerList;
     private final StartScreen startScreen;
 
+    /**
+     * Creates the middle pane components
+     * @param sS 
+     */
     public MiddlePane(StartScreen sS) {
         startScreen = sS;
 
@@ -180,15 +184,25 @@ public class MiddlePane {
         return mainPane;
     }
 
+    /**
+     * Loads the current player's recent GameState
+     * @return 
+     */
     public GameState load() {
         return playerList.load();
     }
 
+    /**
+     * Hides the middle Pane
+     */
     public void hide() {
         mainPane.setVisible(false);
     }
 
-    void showForChoosePlayer() {
+    /**
+     * Shows the components for the choose player option
+     */
+    public void showForChoosePlayer() {
         mainPane.setVisible(true);
         saveButton.setVisible(false);
         newPlayer.setVisible(true);
@@ -197,6 +211,10 @@ public class MiddlePane {
         infoBox2.setItems(playerList.getPlayerList());
     }
 
+    /**
+     * Shows the components for the load game option
+     * @param gameStarted 
+     */
     void showForLoadGame(boolean gameStarted) {
         mainPane.setVisible(true);
         newPlayer.setVisible(false);

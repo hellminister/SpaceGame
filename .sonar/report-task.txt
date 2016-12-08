@@ -1,5 +1,5 @@
 projectKey=SpaceGame
 serverUrl=http://localhost:9100
 dashboardUrl=http://localhost:9100/dashboard/index/SpaceGame
-ceTaskId=AVjfzReHf6_btYDuqq1U
-ceTaskUrl=http://localhost:9100/api/ce/task?id=AVjfzReHf6_btYDuqq1U
+ceTaskId=AVjgEZWBf6_btYDuqq1Z
+ceTaskUrl=http://localhost:9100/api/ce/task?id=AVjgEZWBf6_btYDuqq1Z

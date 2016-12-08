@@ -5,6 +5,7 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoublePropertyBase;
@@ -54,6 +55,13 @@ public class SystemScreen extends Scene {
 
     private Ship ship;
 
+    /**
+     * Creates the System screen that will show the system and where the player 
+     * will be able to control/move his ship
+     * This is the only screen that has real time action.
+     * 
+     * @param aThis the main game object
+     */
     public SystemScreen(SpaceGame aThis) {
         super(new StackPane());
         root = (StackPane) this.getRoot();
@@ -137,6 +145,9 @@ public class SystemScreen extends Scene {
 
     }
 
+    /**
+     * This method binds the scroll pane so that the players main ship is always centered
+     */
     public void finishBindings() {
         DoublePropertyBase halfY = new SimpleDoubleProperty();
 
@@ -150,20 +161,26 @@ public class SystemScreen extends Scene {
         viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(0.5d));
     }
 
+    /**
+     * Set the current system to the specified system and 
+     * draws the system on the scene
+     * Also starts the animation
+     * @param system 
+     */
     public void loadSystem(BubbleSystem system) {
         if (currentSystem != system) {
             currentSystem = system;
-            currentSystem.draw(this);
+            fullSystemArea.getChildren().add(currentSystem.getNode());
+
             ship.getNode().toFront();
         }
         sceneAnimation.start();
 
     }
 
-    public void addSystem(StackPane systemPane) {
-        fullSystemArea.getChildren().add(systemPane);
-    }
-
+    /**
+     * update all moving sprites location by 1 tick of time
+     */
     public void moveSprites() {
         ship.updatePosition();
     }
@@ -171,12 +188,12 @@ public class SystemScreen extends Scene {
     private static class SceneAnimator extends AnimationTimer {
 
         private static final int NANOSECONDS_IN_A_SECOND = 1000000000;
-        private SystemScreen toAnimate;
+        private final SystemScreen toAnimate;
 
         private long last;
         private int nbFrame;
 
-        public SceneAnimator(SystemScreen ta) {
+        SceneAnimator(SystemScreen ta) {
             toAnimate = ta;
         }
 
@@ -188,7 +205,7 @@ public class SystemScreen extends Scene {
             long secs = now - last;
             if (secs > NANOSECONDS_IN_A_SECOND) {
                 last = now;
-                LOG.info((double) secs / NANOSECONDS_IN_A_SECOND + " fps" + nbFrame);
+                LOG.log(Level.INFO, "{0} secs fps : {1}", new Object[]{(double) secs / NANOSECONDS_IN_A_SECOND, nbFrame});
                 nbFrame = 0;
             }
         }

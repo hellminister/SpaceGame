@@ -18,7 +18,6 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
-import spacegame.userinterfaces.systemscreen.SystemScreen;
 
 /**
  * This class represents a whole system with its stars and planets
@@ -37,6 +36,11 @@ public class BubbleSystem {
 
     private StackPane systemPane;
 
+    /**
+     * Creates the star system from the given properties
+     * @param t
+     * @param currentSystemState 
+     */
     public BubbleSystem(Map.Entry<String, Properties> t, Map<String, Properties> currentSystemState) {
         systemName = t.getKey();
         planets = new HashMap<>();
@@ -57,7 +61,7 @@ public class BubbleSystem {
         return systemName;
     }
 
-    public void draw(SystemScreen aThis) {
+    public Node getNode() {
         if (systemPane == null) {
             systemPane = new StackPane();
             systemPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -71,7 +75,7 @@ public class BubbleSystem {
                 systemPane.getChildren().add(body);
             });
         }
-        aThis.addSystem(systemPane);
+        return systemPane;
     }
 
     private void instanciateObject(Properties body, String id) {
