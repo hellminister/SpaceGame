@@ -29,6 +29,10 @@ public class ReadOnlyGameData {
 
     private static final String STAR_SYSTEMS_FOLDER = "src/resources/data/systems/";
     private static final Logger LOG = Logger.getLogger(ReadOnlyGameData.class.getName());
+    private static final int ID_POSITION = 0;
+    private static final int KEY_POSITION = 1;
+    private static final int VALUE_POSITION = 2;
+
 
     private final Map<String, Properties> systems;
 
@@ -76,18 +80,18 @@ public class ReadOnlyGameData {
                 return !t.isEmpty();
             }).forEach(t -> {
                     String[] parts = t.split(":");
-                    String id = systemName + (parts[0].isEmpty() ? "" : "." + parts[0]);
+                    String id = systemName + (parts[ID_POSITION].isEmpty() ? "" : "." + parts[ID_POSITION]);
                     Properties prop2 = objects.get(id);
                     if (prop2 == null) {
                         prop2 = new Properties();
                         objects.put(id, prop2);
                     }
-                    prop2.setProperty(parts[1], parts[2]);
+                    prop2.setProperty(parts[KEY_POSITION], parts[VALUE_POSITION]);
                     LOG.info(t);
-                    LOG.log(Level.INFO, "id1 {0} id {1} key {2} value {3}", new Object[]{parts[0], id, parts[1], parts[2]});
+                    LOG.log(Level.INFO, "id1 {0} id {1} key {2} value {3}", new Object[]{parts[ID_POSITION], id, parts[KEY_POSITION], parts[VALUE_POSITION]});
             });
         } else {
-            LOG.log(Level.SEVERE, "{0}already exists.", systemName);
+            LOG.log(Level.SEVERE, "{0} already exists.", systemName);
         }
     }
 

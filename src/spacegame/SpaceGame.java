@@ -5,10 +5,12 @@
  */
 package spacegame;
 
+import java.util.logging.Level;
 import spacegame.userinterfaces.startscreen.StartScreen;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.stage.Stage;
+import spacegame.userinterfaces.ReachStartScreen;
 import spacegame.userinterfaces.systemscreen.SystemScreen;
 import spacegame.world.GameState;
 import spacegame.world.GameWorld;
@@ -28,6 +30,8 @@ public class SpaceGame extends Application {
     private final GameWorld gameWorld;
 
     private Stage stage;
+    
+    private ReachStartScreen comesFrom;
 
     /**
      * main game constructor that instanciates all the differents scenes
@@ -37,6 +41,7 @@ public class SpaceGame extends Application {
 
         startScreen = new StartScreen(this);
         systemScreen = new SystemScreen(this);
+        comesFrom = systemScreen;
     }
 
     @Override
@@ -81,18 +86,33 @@ public class SpaceGame extends Application {
      */
     public boolean changeSceneToSystemScreen() {
         systemScreen.loadSystem(gameWorld.getSystem());
+        LOG.log(Level.INFO, "Switch to System Screen for {0}", gameWorld.getSystem().getName());
 
         stage.setScene(systemScreen);
+        systemScreen.giveFocusBack();
 
+        return true;
+    }
+    
+    /**
+     * Sets the Scene to the previous one
+     * @return 
+     */
+    public boolean returnToPreviousScreen(){
+        stage.setScene(comesFrom);
+        comesFrom.giveFocusBack();
         return true;
     }
 
     /**
      * Change the current scene to the Start screen scene
+     * @param previous
      * @return 
      */
-    public boolean changeSceneToStartScreen() {
+    public boolean changeSceneToStartScreen(ReachStartScreen previous) {
+        LOG.info("Switch to Start Screen");
         stage.setScene(startScreen);
+        comesFrom = previous;
 
         return true;
     }

@@ -27,6 +27,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+
 import spacegame.SpaceGame;
 import spacegame.world.GameState;
 
@@ -40,6 +41,32 @@ public class StartScreen extends Scene {
     private static final int HEIGHT = 480;
     private static final String BACK_IMAGE_FILE_PATH = "/resources/images/PIA17563-1920x1200.jpg";
     private static final String CREDIT_FILE = "src/resources/data/credits.txt";
+
+    private static final int GRID_PANE_MENU_THIRD = 50;
+    private static final int MAIN_BUTTONS_X_TRANSLATE = -10;
+    private static final int LEFT_BUTTON_INSET = 16;
+    private static final int BOTTOM_BUTTON_INSET = 10;
+    private static final int RIGHT_BUTTON_INSET = 0;
+    private static final int TOP_BUTTON_INSET = 0;
+    private static final int MAIN_BUTTONS_VERTICAL_SPACING = 12;
+    private static final int MAIN_BUTTON_MAX_HEIGHT = 30;
+    private static final int MAIN_BUTTON_PREF_HEIGHT = 30;
+    private static final int MAIN_BUTTON_MIN_HEIGHT = 15;
+    private static final int MAIN_BUTTON_MAX_WIDTH = 100;
+    private static final int MAIN_BUTTON_PREF_WIDTH = 100;
+    private static final int MAIN_BUTTON_MIN_WIDTH = 50;
+    private static final int FIRST_ROW = 0;
+    private static final int SECOND_COLUMN = 1;
+    private static final int THIRD_COLUMN = 2;
+    private static final int FIRST_COLUMN = 0;
+    private static final int FIRST_ROW_HEIGHT_PERCENT = 100;
+    private static final int MAIN_INFOBOX_MAX_HEIGHT = 330;
+    private static final int MAIN_INFOBOX_PREF_HEIGHT = 330;
+    private static final int MAIN_INFOBOX_MIN_HEIGHT = 330;
+    private static final int MAIN_INFOBOX_MAX_WIDTH = 200;
+    private static final int MAIN_INFOBOX_PREF_WIDTH = 200;
+    private static final int MAIN_INFOBOX_MIN_WIDTH = 200;
+    private static final int MAIN_INFOBOX_X_TRANSLATE = 20;
 
     private Image background;
     private ImageView backgroundPlate;
@@ -114,29 +141,29 @@ public class StartScreen extends Scene {
         mainPane.getChildren().add(startScreenGridPane);
 
         createButtons();
-        startScreenGridPane.add(mainButtons, 0, 0);
+        startScreenGridPane.add(mainButtons, FIRST_COLUMN, FIRST_ROW);
 
         createInfoBox();
-        startScreenGridPane.add(infoBox, 2, 0);
+        startScreenGridPane.add(infoBox, THIRD_COLUMN, FIRST_ROW);
 
         middlePane = new MiddlePane(this);
-        startScreenGridPane.add(middlePane.getRootPane(), 1, 0);
+        startScreenGridPane.add(middlePane.getRootPane(), SECOND_COLUMN, FIRST_ROW);
 
     }
 
     private void createStartMenuGridPane() {
         startScreenGridPane = new GridPane();
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(50);
+        column1.setPercentWidth(GRID_PANE_MENU_THIRD);
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setPercentWidth(50);
+        column2.setPercentWidth(GRID_PANE_MENU_THIRD);
         ColumnConstraints column3 = new ColumnConstraints();
         column3.setHalignment(HPos.CENTER);
-        column3.setPercentWidth(50);
+        column3.setPercentWidth(GRID_PANE_MENU_THIRD);
         startScreenGridPane.getColumnConstraints().addAll(column1, column2, column3);
         RowConstraints row1 = new RowConstraints();
         row1.setValignment(VPos.CENTER);
-        row1.setPercentHeight(100);
+        row1.setPercentHeight(FIRST_ROW_HEIGHT_PERCENT);
         startScreenGridPane.getRowConstraints().add(row1);
         startScreenGridPane.setPrefSize(mainPane.getPrefWidth(), mainPane.getPrefHeight());
     }
@@ -145,10 +172,10 @@ public class StartScreen extends Scene {
         infoBox = new TextArea();
         infoBox.setEditable(false);
         infoBox.setWrapText(true);
-        infoBox.setPrefSize(200, 330);
-        infoBox.setMaxSize(200, 330);
-        infoBox.setMinSize(200, 330);
-        infoBox.setTranslateX(20);
+        infoBox.setPrefSize(MAIN_INFOBOX_PREF_WIDTH, MAIN_INFOBOX_PREF_HEIGHT);
+        infoBox.setMaxSize(MAIN_INFOBOX_MAX_WIDTH, MAIN_INFOBOX_MAX_HEIGHT);
+        infoBox.setMinSize(MAIN_INFOBOX_MIN_WIDTH, MAIN_INFOBOX_MIN_HEIGHT);
+        infoBox.setTranslateX(MAIN_INFOBOX_X_TRANSLATE);
 
         infoBox.setStyle("-fx-background-color: grey");
     }
@@ -187,10 +214,17 @@ public class StartScreen extends Scene {
         enterGame.setText("Enter Game");
         setMainButtonSizings(enterGame);
         enterGame.setOnAction(event -> {
-            // add a check to see if a gamestate is loaded
-            gameStarted = mainTheater.changeSceneToSystemScreen();
+            if (mainTheater.getPlayerState() == null){
+                infoBox.setText("No loaded game, Please load a game or create a new player!");
+            } else if (!gameStarted){
+                LOG.info("coming from game not started");
+                gameStarted = mainTheater.changeSceneToSystemScreen();
+            } else {
+                LOG.info("coming from game started");
+                gameStarted = mainTheater.returnToPreviousScreen();
+            }
 
-            infoBox.setText("Enter Game");
+            
             middlePane.hide();
         });
 
@@ -218,19 +252,19 @@ public class StartScreen extends Scene {
             middlePane.hide();
         });
 
-        mainButtons = new VBox(12);
-        padding = new Insets(0, 0, 10, 16);
+        mainButtons = new VBox(MAIN_BUTTONS_VERTICAL_SPACING);
+        padding = new Insets(TOP_BUTTON_INSET, RIGHT_BUTTON_INSET, BOTTOM_BUTTON_INSET, LEFT_BUTTON_INSET);
         mainButtons.setPadding(padding);
         mainButtons.setAlignment(Pos.CENTER);
 
         mainButtons.getChildren().addAll(enterGame, choosePlayer, loadGame, credits);
-        mainButtons.setTranslateX(-10);
+        mainButtons.setTranslateX(MAIN_BUTTONS_X_TRANSLATE);
     }
 
     private void setMainButtonSizings(Button btn) {
-        btn.setMaxSize(100, 30);
-        btn.setMinSize(50, 15);
-        btn.setPrefSize(100, 30);
+        btn.setMaxSize(MAIN_BUTTON_MAX_WIDTH, MAIN_BUTTON_MAX_HEIGHT);
+        btn.setMinSize(MAIN_BUTTON_MIN_WIDTH, MAIN_BUTTON_MIN_HEIGHT);
+        btn.setPrefSize(MAIN_BUTTON_PREF_WIDTH, MAIN_BUTTON_PREF_HEIGHT);
 
     }
 
@@ -260,7 +294,8 @@ public class StartScreen extends Scene {
 
     /**
      * Sets the current GameState
-     * @param load 
+     *
+     * @param load
      */
     public void setPlayerInfo(GameState load) {
         mainTheater.setPlayerState(load);
@@ -269,7 +304,8 @@ public class StartScreen extends Scene {
 
     /**
      * returns the Current GameState
-     * @return 
+     *
+     * @return
      */
     public GameState getPlayerInfo() {
         return mainTheater.getPlayerState();

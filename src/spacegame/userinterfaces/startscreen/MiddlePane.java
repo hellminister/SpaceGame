@@ -26,6 +26,27 @@ import spacegame.world.player.Species;
  */
 public class MiddlePane {
 
+    private static final int INFOBOX_MAX_HEIGHT = 288;
+    private static final int INFOBOX_PREF_HEIGHT = 288;
+    private static final int INFOBOX_MIN_HEIGHT = 288;
+    private static final int INFOBOX_MAX_WIDTH = 200;
+    private static final int INFOBOX_PREF_WIDTH = 200;
+    private static final int INFOBOX_MIN_WIDTH = 200;
+    private static final int MAINPNANE_VERTICAL_SPACING = 12;
+    private static final int BUTTONS_HORIZONTAL_SPACING = 10;
+    private static final int BUTTONS_MAX_HEIGHT = 30;
+    private static final int BUTTONS_PREF_HEIGHT = 30;
+    private static final int BUTTONS_MIN_HEIGHT = 15;
+    private static final int BUTTONS_MAX_WIDTH = 95;
+    private static final int BUTTONS_PREF_WIDTH = 95;
+    private static final int BUTTONS_MIN_WIDTH = 50;
+    private static final int NEW_PLAYER_BUTTON_MAX_HEIGHT = 30;
+    private static final int NEW_PLAYER_BUTTON_PREF_HEIGHT = 30;
+    private static final int NEW_PLAYER_BUTTON_MIN_HEIGHT = 15;
+    private static final int NEW_PLAYER_BUTTON_MAX_WIDTH = 200;
+    private static final int NEW_PLAYER_BUTTON_PREF_WIDTH = 200;
+    private static final int NEW_PLAYER_BUTTON_MIN_WIDTH = 50;
+
     private VBox mainPane;
 
     private ListView<String> infoBox2;
@@ -41,7 +62,8 @@ public class MiddlePane {
 
     /**
      * Creates the middle pane components
-     * @param sS 
+     *
+     * @param sS
      */
     public MiddlePane(StartScreen sS) {
         startScreen = sS;
@@ -57,20 +79,20 @@ public class MiddlePane {
     }
 
     private void createMiddlePane() {
-        mainPane = new VBox(12);
+        mainPane = new VBox(MAINPNANE_VERTICAL_SPACING);
         mainPane.setAlignment(Pos.CENTER);
 
         infoBox2 = new ListView<>();
         infoBox2.setEditable(false);
-        infoBox2.setPrefSize(200, 288);
-        infoBox2.setMaxSize(200, 288);
-        infoBox2.setMinSize(200, 288);
+        infoBox2.setPrefSize(INFOBOX_PREF_WIDTH, INFOBOX_PREF_HEIGHT);
+        infoBox2.setMaxSize(INFOBOX_MAX_WIDTH, INFOBOX_MAX_HEIGHT);
+        infoBox2.setMinSize(INFOBOX_MIN_WIDTH, INFOBOX_MIN_HEIGHT);
         infoBox2.setStyle("-fx-background-color: grey");
         infoBox2.setEditable(false);
 
         mainPane.getChildren().add(infoBox2);
 
-        HBox middlePaneButtons = new HBox(10);
+        HBox middlePaneButtons = new HBox(BUTTONS_HORIZONTAL_SPACING);
         middlePaneButtons.setAlignment(Pos.CENTER);
 
         StackPane selectButtons = new StackPane();
@@ -164,16 +186,16 @@ public class MiddlePane {
     }
 
     private void setMiddleButtonSizings(Button btn) {
-        btn.setMaxSize(95, 30);
-        btn.setMinSize(50, 15);
-        btn.setPrefSize(95, 30);
+        btn.setMaxSize(BUTTONS_MAX_WIDTH, BUTTONS_MAX_HEIGHT);
+        btn.setMinSize(BUTTONS_MIN_WIDTH, BUTTONS_MIN_HEIGHT);
+        btn.setPrefSize(BUTTONS_PREF_WIDTH, BUTTONS_PREF_HEIGHT);
 
     }
 
     private void setNewPlayerButtonSizings(Button btn) {
-        btn.setMaxSize(200, 30);
-        btn.setMinSize(50, 15);
-        btn.setPrefSize(200, 30);
+        btn.setMaxSize(NEW_PLAYER_BUTTON_MAX_WIDTH, NEW_PLAYER_BUTTON_MAX_HEIGHT);
+        btn.setMinSize(NEW_PLAYER_BUTTON_MIN_WIDTH, NEW_PLAYER_BUTTON_MIN_HEIGHT);
+        btn.setPrefSize(NEW_PLAYER_BUTTON_PREF_WIDTH, NEW_PLAYER_BUTTON_PREF_HEIGHT);
     }
 
     private String getnewSaveGameName() {
@@ -186,7 +208,8 @@ public class MiddlePane {
 
     /**
      * Loads the current player's recent GameState
-     * @return 
+     *
+     * @return
      */
     public GameState load() {
         return playerList.load();
@@ -213,7 +236,8 @@ public class MiddlePane {
 
     /**
      * Shows the components for the load game option
-     * @param gameStarted 
+     *
+     * @param gameStarted
      */
     void showForLoadGame(boolean gameStarted) {
         mainPane.setVisible(true);

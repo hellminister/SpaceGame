@@ -89,6 +89,12 @@ public class Ship {
 
         sprite.setScaleX(0.5);
         sprite.setScaleY(0.5);
+        
+        sprite.setPickOnBounds(false);
+        
+        sprite.setOnMouseClicked(event -> {
+            LOG.info("SHIP HAS BEEN CLICKED!");
+        });
 
         return sprite;
     }

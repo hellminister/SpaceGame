@@ -1,5 +1,7 @@
 :contains1:s1
 :contains2:p1
+:contains3:p2
+:contains4:p3
 s1:class:Star
 s1:size:50
 s1:intensity:STRONG
@@ -14,3 +16,11 @@ p1:building3:RESOURCE_STORE
 p1:building4:SHIPYARD
 p1:building5:HIRING_BUREAU
 p1:building6:OUTFIT_STORE
+p2:class:Planet
+p2:orbit:1000
+p2:size:40
+p2:habitability:HABITABLE
+p3:class:Planet
+p3:orbit:5000
+p3:size:50
+p3:habitability:HABITABLE

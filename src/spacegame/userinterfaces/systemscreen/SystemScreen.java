@@ -5,23 +5,18 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
+import spacegame.userinterfaces.ReachStartScreen;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.Node;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.BackgroundPosition;
-import javafx.scene.layout.BackgroundRepeat;
-import javafx.scene.layout.BackgroundSize;
 import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import spacegame.SpaceGame;
 import spacegame.world.ships.Ship;
 import spacegame.world.systems.BubbleSystem;
@@ -30,18 +25,15 @@ import spacegame.world.systems.BubbleSystem;
  *
  * @author user
  */
-public class SystemScreen extends Scene {
+public class SystemScreen extends ReachStartScreen{
 
     private static final Logger LOG = Logger.getLogger(SystemScreen.class.getName());
-    private static final String BACK_IMAGE_TILE_FILE_PATH = "/resources/images/tiles/1.jpg";
-    private static final double DIMENSION = 10000;
+    private static final double DIMENSION = 100000000;
+    private static final double FIFTY_PERCENT = 0.5d;
 
     private final ScrollPane viewport;
     private final StackPane fullSystemArea;
-    private final Canvas sizing;
-
-    private Image backgroundTile;
-    private BackgroundImage backgroundImage;
+    private final Rectangle sizing;
 
     private final AnchorPane userInterface;
 
@@ -52,6 +44,8 @@ public class SystemScreen extends Scene {
     private BubbleSystem currentSystem;
 
     private SpaceGame mainTheater;
+    
+    private final MovingBackground background;
 
     private Ship ship;
 
@@ -66,19 +60,21 @@ public class SystemScreen extends Scene {
         super(new StackPane());
         root = (StackPane) this.getRoot();
         sceneAnimation = new SceneAnimator(this);
-
-        backgroundTile = new Image(BACK_IMAGE_TILE_FILE_PATH);
-        backgroundImage = new BackgroundImage(backgroundTile, BackgroundRepeat.REPEAT, BackgroundRepeat.REPEAT, BackgroundPosition.CENTER, BackgroundSize.DEFAULT);
-
+        
         mainTheater = aThis;
 
         fullSystemArea = new StackPane();
-
-        fullSystemArea.setBackground(new Background(backgroundImage));
-        sizing = new Canvas(DIMENSION, DIMENSION);
+        
+        background = new MovingBackground();
+        background.addToPane(fullSystemArea);
+        
+        sizing = new Rectangle(DIMENSION, DIMENSION);
+        sizing.setFill(Color.TRANSPARENT);
 
         fullSystemArea.maxHeightProperty().bind(sizing.heightProperty());
         fullSystemArea.maxWidthProperty().bind(sizing.widthProperty());
+        
+        
 
         viewport = new ScrollPane(fullSystemArea) {
             @Override
@@ -95,7 +91,7 @@ public class SystemScreen extends Scene {
 
         viewport.prefViewportHeightProperty().bind(root.heightProperty());
         viewport.prefViewportWidthProperty().bind(root.widthProperty());
-
+        
         userInterface = new AnchorPane();
 
         root.getChildren().add(userInterface);
@@ -135,7 +131,7 @@ public class SystemScreen extends Scene {
                     ship.stopAccelerate();
                     break;
                 case X:
-                    mainTheater.changeSceneToStartScreen();
+                    mainTheater.changeSceneToStartScreen(this);
                     sceneAnimation.stop();
                     break;
                 default:
@@ -157,8 +153,9 @@ public class SystemScreen extends Scene {
 
         halfX.bind(fullSystemArea.widthProperty().subtract(viewport.widthProperty()));
 
-        viewport.vvalueProperty().bind(ship.getNode().translateYProperty().divide(halfY).add(0.5d));
-        viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(0.5d));
+        viewport.vvalueProperty().bind(ship.getNode().translateYProperty().divide(halfY).add(FIFTY_PERCENT));
+        viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(FIFTY_PERCENT));
+
     }
 
     /**
@@ -174,8 +171,6 @@ public class SystemScreen extends Scene {
 
             ship.getNode().toFront();
         }
-        sceneAnimation.start();
-
     }
 
     /**
@@ -183,6 +178,12 @@ public class SystemScreen extends Scene {
      */
     public void moveSprites() {
         ship.updatePosition();
+        background.moveBackgroundIfNecessary(ship.posXProperty(), ship.posYProperty());
+    }
+
+    @Override
+    public void giveFocusBack() {
+        sceneAnimation.start();
     }
 
     private static class SceneAnimator extends AnimationTimer {

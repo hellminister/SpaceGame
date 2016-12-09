@@ -29,6 +29,10 @@ public class PlayerList {
     private static final Logger LOG = Logger.getLogger(PlayerList.class.getName());
     private static final String PATH_URL = "src/resources/saves/";
     private static final String FILE_NAME = "playerList.txt";
+    
+    private static final int SAVE_FOLDER_NAME_POSITION = 0;
+    private static final int PLAYER_NAME_POSITION = 1;
+    private static final int CURRENT_PLAYER_MARKER_POSITION = 2;
 
     private TreeMap<String, String> playerListMap;
 
@@ -58,10 +62,10 @@ public class PlayerList {
             while (line != null) {
                 String[] parts = line.split(" \\\"|\\\" ?");
 
-                playerListMap.put(parts[1], parts[0]);
-                if (parts.length > 2){
-                    currentPlayer = parts[1];
-                    currentPlayerSaves = new Saves(parts[0]);
+                playerListMap.put(parts[PLAYER_NAME_POSITION], parts[SAVE_FOLDER_NAME_POSITION]);
+                if (parts.length > CURRENT_PLAYER_MARKER_POSITION){
+                    currentPlayer = parts[PLAYER_NAME_POSITION];
+                    currentPlayerSaves = new Saves(parts[SAVE_FOLDER_NAME_POSITION]);
                 }
 
                 line = reader.readLine();
