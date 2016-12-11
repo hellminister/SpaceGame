@@ -46,7 +46,7 @@ public class SystemScreen extends ReachStartScreen{
 
     private SpaceGame mainTheater;
     
-    private final MovingBackground1 background;
+    private final MovingBackground background;
 
     private Ship ship;
 
@@ -66,7 +66,7 @@ public class SystemScreen extends ReachStartScreen{
 
         fullSystemArea = new StackPane();
         
-        background = new MovingBackground1();
+        background = new MovingBackground();
         fullSystemArea.getChildren().add(background);
         StackPane.setAlignment(background, Pos.CENTER);
         

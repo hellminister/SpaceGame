@@ -5,147 +5,107 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
+import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
-import javafx.scene.Group;
+import javafx.scene.Parent;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
+import javafx.stage.Screen;
 
 /**
  *
  * @author user
  */
-public class MovingBackground extends Group {
-    
-    
+public class MovingBackground extends Parent {
+
     private static final Logger LOG = Logger.getLogger(MovingBackground.class.getName());
 
     private static final String BACK_IMAGE_TILE_FILE_PATH = "/resources/images/tiles/1.jpg";
-    private static final int GRIDSIZE = 5;
-    private static final int CENTER_SQUARE = (GRIDSIZE - 1) / 2;
+    private static final int EXTRA_TILES = 2;
+    private static final double HALF = 0.5;
 
     private final Image backgroundTile;
-    private final ImageView[][] aSquare;
+    private final Canvas drawnBackground;
 
-    private int leftMostIndex;
-    private int rightMostIndex;
-    private int bottomMostIndex;
-    private int topMostIndex;
-    
-    private int horizontalCenter;
-    private int verticalCenter;
+    private DoubleBinding horizontalTranslate;
+    private DoubleBinding verticalTranslate;
 
     /**
      * Initialize a moving background with the default values
      */
     public MovingBackground() {
-        leftMostIndex = 0;
-        rightMostIndex = GRIDSIZE - 1;
-        bottomMostIndex = GRIDSIZE - 1;
-        topMostIndex = 0;
-        horizontalCenter = CENTER_SQUARE;
-        verticalCenter = CENTER_SQUARE;
-        
         backgroundTile = new Image(BACK_IMAGE_TILE_FILE_PATH);
-        aSquare = new ImageView[GRIDSIZE][GRIDSIZE];
-        for (int i = 0; i < GRIDSIZE; i++) {
-            for (int j = 0; j < GRIDSIZE; j++) {
-                aSquare[i][j] = new ImageView(backgroundTile);
-                aSquare[i][j].setTranslateX((i - CENTER_SQUARE) * backgroundTile.getWidth());
-                aSquare[i][j].setTranslateY((j - CENTER_SQUARE) * backgroundTile.getHeight());
+
+        double maxScreenWidth = Screen.getScreens().stream().mapToDouble(value -> {
+                return value.getBounds().getWidth();
+        }).max().orElse(0.0);
+
+        double maxScreenHeight = Screen.getScreens().stream().mapToDouble(value -> {
+                return value.getBounds().getHeight();
+        }).max().orElse(0.0);
+
+        double width = backgroundTile.getWidth();
+        double height = backgroundTile.getHeight();
+
+        int nbTileForWidth = (int) Math.round(maxScreenWidth / width) + EXTRA_TILES;
+        int nbTileForHeight = (int) Math.round(maxScreenHeight / height) + EXTRA_TILES;
+
+        LOG.log(Level.INFO, "Max sizes of screen (w*h) {0} * {1}", new Object[]{maxScreenWidth, maxScreenHeight});
+        LOG.log(Level.INFO, "Number of background tiles (w*h) {0} * {1}", new Object[]{nbTileForWidth, nbTileForHeight});
+
+        drawnBackground = new Canvas(nbTileForWidth * width, nbTileForHeight * height);
+        GraphicsContext gc = drawnBackground.getGraphicsContext2D();
+        for (int i = 0; i < nbTileForWidth; i++) {
+            for (int j = 0; j < nbTileForHeight; j++) {
+                gc.drawImage(backgroundTile, width * i, height * j);
             }
         }
+        super.getChildren().add(drawnBackground);
+
     }
 
     /**
-     * Add the created moving background to the given Pane
+     * Binds the background squares so that the ship is mostly always centered
+     * in the squares
      *
-     * @param fullSystemArea
-     */
-    public void addToPane(Pane fullSystemArea) {
-        for (int i = 0; i < GRIDSIZE; i++) {
-            for (int j = 0; j < GRIDSIZE; j++) {
-                fullSystemArea.getChildren().add(aSquare[i][j]);
-            }
-        }
-    }
-
-    /**
-     * Moves the background squares so that the ship is mostly always centered in the squares
      * @param posXProperty
-     * @param posYProperty 
+     * @param posYProperty
      */
-    public void moveBackgroundIfNecessary(ReadOnlyDoubleProperty posXProperty, ReadOnlyDoubleProperty posYProperty) {
-        double posX = posXProperty.get();
-        double posY = posYProperty.get();
-        double centerX = aSquare[horizontalCenter][verticalCenter].getTranslateX();
-        double centerY = aSquare[horizontalCenter][verticalCenter].getTranslateY();
-        
-        if (posX < centerX){
-            moveLeft();
-        } else if (posX > (centerX + backgroundTile.getWidth())){
-            moveRight();
-        }
-        
-        if (posY < centerY){
-            moveUp();
-        } else if (posY > (centerY + backgroundTile.getHeight())){
-            moveDown();
-        }
+    public void bindTo2(ReadOnlyDoubleProperty posXProperty, ReadOnlyDoubleProperty posYProperty) {
+        horizontalTranslate = new TranslateBinding(posXProperty, getTranslateX(), backgroundTile.getWidth());
+        translateXProperty().bind(horizontalTranslate);
+
+        verticalTranslate = new TranslateBinding(posYProperty, getTranslateY(), backgroundTile.getHeight());
+        translateYProperty().bind(verticalTranslate);
 
     }
 
-    private void moveRight() {
-        for (int j = 0; j < GRIDSIZE; j++) {
-            aSquare[leftMostIndex][j].setTranslateX((aSquare[leftMostIndex][j].getTranslateX()) + (backgroundTile.getWidth() * GRIDSIZE));
-        }
-        rightMostIndex = leftMostIndex;
-        leftMostIndex = (leftMostIndex + 1) % GRIDSIZE;
-        horizontalCenter = (horizontalCenter + 1) % GRIDSIZE;
-    }
+    private static class TranslateBinding extends DoubleBinding {
 
-    private void moveLeft() {
-        for (int j = 0; j < GRIDSIZE; j++) {
-            aSquare[rightMostIndex][j].setTranslateX((aSquare[rightMostIndex][j].getTranslateX()) - (backgroundTile.getWidth() * GRIDSIZE));
-        }
-        leftMostIndex = rightMostIndex;
-        rightMostIndex -= 1;
-        if (rightMostIndex < 0) {
-            rightMostIndex = GRIDSIZE - 1;
-            
-        }
-        horizontalCenter -= 1;
-        if (horizontalCenter < 0) {
-            horizontalCenter = GRIDSIZE - 1;
-            
-        }
-    }
+        protected double trans;
+        protected ReadOnlyDoubleProperty position;
+        protected double dimension;
 
-    private void moveUp() {
-        for (int i = 0; i < GRIDSIZE; i++) {
-            aSquare[i][bottomMostIndex].setTranslateY((aSquare[i][bottomMostIndex].getTranslateY()) - (backgroundTile.getHeight() * GRIDSIZE));
+        TranslateBinding(ReadOnlyDoubleProperty pos, double translate, double imgDim) {
+            super.bind(pos);
+            trans = translate;
+            dimension = imgDim;
+            position = pos;
         }
-        topMostIndex = bottomMostIndex;
-        bottomMostIndex -= 1;
-        if (bottomMostIndex < 0) {
-            bottomMostIndex = GRIDSIZE - 1;
-        }
-        
-        verticalCenter -= 1;
-        if (verticalCenter < 0) {
-            verticalCenter = GRIDSIZE - 1;
-        }
-        
-    }
 
-    private void moveDown() {
-        for (int i = 0; i < GRIDSIZE; i++) {
-            aSquare[i][topMostIndex].setTranslateY((aSquare[i][topMostIndex].getTranslateY()) + (backgroundTile.getHeight() * GRIDSIZE));
+        @Override
+        protected double computeValue() {
+            double pos = position.get();
+            if (pos < (trans - (dimension * HALF))) {
+                trans -= dimension;
+            } else if (pos > (trans + (dimension * HALF))) {
+                trans += dimension;
+            }
+            return trans;
         }
-        bottomMostIndex = topMostIndex;
-        topMostIndex = (topMostIndex + 1) % GRIDSIZE;
-        verticalCenter = (verticalCenter + 1) % GRIDSIZE;
     }
 
 }
