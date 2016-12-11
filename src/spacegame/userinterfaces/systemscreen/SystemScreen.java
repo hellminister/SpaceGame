@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.AnchorPane;
@@ -45,7 +46,7 @@ public class SystemScreen extends ReachStartScreen{
 
     private SpaceGame mainTheater;
     
-    private final MovingBackground background;
+    private final MovingBackground1 background;
 
     private Ship ship;
 
@@ -65,8 +66,9 @@ public class SystemScreen extends ReachStartScreen{
 
         fullSystemArea = new StackPane();
         
-        background = new MovingBackground();
-        background.addToPane(fullSystemArea);
+        background = new MovingBackground1();
+        fullSystemArea.getChildren().add(background);
+        StackPane.setAlignment(background, Pos.CENTER);
         
         sizing = new Rectangle(DIMENSION, DIMENSION);
         sizing.setFill(Color.TRANSPARENT);
@@ -104,6 +106,8 @@ public class SystemScreen extends ReachStartScreen{
         ship = new Ship();
         Node nShip = ship.draw();
 
+        
+        
         fullSystemArea.getChildren().add(nShip);
 
         this.setOnKeyPressed(e -> {
@@ -155,19 +159,22 @@ public class SystemScreen extends ReachStartScreen{
 
         viewport.vvalueProperty().bind(ship.getNode().translateYProperty().divide(halfY).add(FIFTY_PERCENT));
         viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(FIFTY_PERCENT));
+        
+        background.bindTo2(ship.posXProperty(), ship.posYProperty());
 
     }
 
     /**
      * Set the current system to the specified system and 
      * draws the system on the scene
+     * will need to change the constructions here to separate the drawings with the details
      * Also starts the animation
      * @param system 
      */
     public void loadSystem(BubbleSystem system) {
         if (currentSystem != system) {
             currentSystem = system;
-            fullSystemArea.getChildren().add(currentSystem.getNode());
+            fullSystemArea.getChildren().add(currentSystem.getNode(mainTheater));
 
             ship.getNode().toFront();
         }
@@ -178,7 +185,6 @@ public class SystemScreen extends ReachStartScreen{
      */
     public void moveSprites() {
         ship.updatePosition();
-        background.moveBackgroundIfNecessary(ship.posXProperty(), ship.posYProperty());
     }
 
     @Override

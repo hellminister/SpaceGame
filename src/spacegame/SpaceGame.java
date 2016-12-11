@@ -11,9 +11,11 @@ import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import spacegame.userinterfaces.ReachStartScreen;
+import spacegame.userinterfaces.planetscreen.PlanetScreen;
 import spacegame.userinterfaces.systemscreen.SystemScreen;
 import spacegame.world.GameState;
 import spacegame.world.GameWorld;
+import spacegame.world.systems.celestialbodies.CelestialBody;
 
 /**
  *
@@ -26,6 +28,8 @@ public class SpaceGame extends Application {
     private final StartScreen startScreen;
 
     private final SystemScreen systemScreen;
+    
+    private final PlanetScreen planetScreen;
 
     private final GameWorld gameWorld;
 
@@ -41,6 +45,7 @@ public class SpaceGame extends Application {
 
         startScreen = new StartScreen(this);
         systemScreen = new SystemScreen(this);
+        planetScreen = new PlanetScreen(this);
         comesFrom = systemScreen;
     }
 
@@ -115,6 +120,12 @@ public class SpaceGame extends Application {
         comesFrom = previous;
 
         return true;
+    }
+
+    public void changeSceneToPlanetScreen(CelestialBody t) {
+        LOG.log(Level.INFO, "Switch to Planet Screen for {0}", t.getId());
+        
+        planetScreen.loadPlanet(t);
     }
 
 }

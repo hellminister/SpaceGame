@@ -8,6 +8,7 @@ package spacegame.userinterfaces.planetscreen;
 import javafx.scene.layout.StackPane;
 import spacegame.SpaceGame;
 import spacegame.userinterfaces.ReachStartScreen;
+import spacegame.world.systems.celestialbodies.CelestialBody;
 
 /**
  *
@@ -32,6 +33,10 @@ public class PlanetScreen extends ReachStartScreen {
     @Override
     public void giveFocusBack() {
         /* does nothing yet*/
+    }
+
+    public void loadPlanet(CelestialBody t) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

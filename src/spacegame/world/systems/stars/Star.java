@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.systems;
+package spacegame.world.systems.stars;
 
 import java.util.Map;
 import java.util.Properties;
@@ -29,7 +29,7 @@ public class Star {
 
     private Node sprite;
 
-    Star(Properties body, String id) {
+    public Star(Properties body, String id) {
         this.id = id;
         LOG.log(Level.INFO, "Making {0}", id);
         for (Map.Entry<Object, Object> entry : body.entrySet()) {

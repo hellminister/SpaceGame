@@ -5,6 +5,7 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
+import java.util.logging.Logger;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.scene.Group;
 import javafx.scene.image.Image;
@@ -16,6 +17,9 @@ import javafx.scene.layout.Pane;
  * @author user
  */
 public class MovingBackground extends Group {
+    
+    
+    private static final Logger LOG = Logger.getLogger(MovingBackground.class.getName());
 
     private static final String BACK_IMAGE_TILE_FILE_PATH = "/resources/images/tiles/1.jpg";
     private static final int GRIDSIZE = 5;
@@ -106,12 +110,12 @@ public class MovingBackground extends Group {
             aSquare[rightMostIndex][j].setTranslateX((aSquare[rightMostIndex][j].getTranslateX()) - (backgroundTile.getWidth() * GRIDSIZE));
         }
         leftMostIndex = rightMostIndex;
-        rightMostIndex = rightMostIndex - 1;
+        rightMostIndex -= 1;
         if (rightMostIndex < 0) {
             rightMostIndex = GRIDSIZE - 1;
             
         }
-        horizontalCenter = horizontalCenter - 1;
+        horizontalCenter -= 1;
         if (horizontalCenter < 0) {
             horizontalCenter = GRIDSIZE - 1;
             
@@ -123,12 +127,12 @@ public class MovingBackground extends Group {
             aSquare[i][bottomMostIndex].setTranslateY((aSquare[i][bottomMostIndex].getTranslateY()) - (backgroundTile.getHeight() * GRIDSIZE));
         }
         topMostIndex = bottomMostIndex;
-        bottomMostIndex = bottomMostIndex - 1;
+        bottomMostIndex -= 1;
         if (bottomMostIndex < 0) {
             bottomMostIndex = GRIDSIZE - 1;
         }
         
-        verticalCenter = verticalCenter - 1;
+        verticalCenter -= 1;
         if (verticalCenter < 0) {
             verticalCenter = GRIDSIZE - 1;
         }

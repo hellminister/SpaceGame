@@ -3,17 +3,17 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.systems;
+package spacegame.userinterfaces.systemscreen;
+
+import javafx.beans.property.DoubleProperty;
 
 /**
  *
  * @author user
  */
-public enum Building {
-    SPACE_PORT,
-    BANK,
-    RESOURCE_STORE,
-    SHIPYARD,
-    HIRING_BUREAU,
-    OUTFIT_STORE;
+public interface SystemScreenSprite {
+    
+    DoubleProperty posXProperty();
+    DoubleProperty posYProperty();
+    
 }

@@ -5,6 +5,9 @@
  */
 package spacegame.world.systems;
 
+import spacegame.world.systems.celestialbodies.Planet;
+import spacegame.world.systems.celestialbodies.CelestialBody;
+import spacegame.world.systems.stars.Star;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -18,6 +21,7 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import spacegame.SpaceGame;
 
 /**
  * This class represents a whole system with its stars and planets
@@ -61,7 +65,7 @@ public class BubbleSystem {
         return systemName;
     }
 
-    public Node getNode() {
+    public Node getNode(SpaceGame mainTheater) {
         if (systemPane == null) {
             systemPane = new StackPane();
             systemPane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -72,6 +76,9 @@ public class BubbleSystem {
             planets.forEach((t, u) -> {
                 Node body = t.getSprite();
                 body.setTranslateX(u);
+                body.setOnMouseClicked(event -> {
+                    mainTheater.changeSceneToPlanetScreen(t);
+                });
                 systemPane.getChildren().add(body);
             });
         }

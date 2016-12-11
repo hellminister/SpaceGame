@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.systems;
+package spacegame.world.systems.celestialbodies;
 
 import javafx.scene.Node;
 
@@ -32,5 +32,9 @@ public abstract class CelestialBody {
     }
 
     protected abstract void createSprite();
+
+    public String getId() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
     
 }
