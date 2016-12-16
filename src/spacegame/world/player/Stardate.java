@@ -26,7 +26,7 @@ public class Stardate implements Serializable {
      * Creates a new stardate starting on the first game day
      */
     public Stardate() {
-        this(1);
+        this(0);
     }
 
     /**
@@ -35,6 +35,17 @@ public class Stardate implements Serializable {
      */
     public Stardate(long date) {
         this.date = date;
+    }
+    
+    /**
+     * Adds the number of given days to the date
+     * @param nbDay MUST be positive or zero
+     */
+    public void add(long nbDay){
+        if (nbDay < 0){
+            throw new IllegalArgumentException("Cannot add a negative number of days : " + nbDay);
+        }
+        date += nbDay;
     }
 
     private void writeObject(ObjectOutputStream s) throws IOException {

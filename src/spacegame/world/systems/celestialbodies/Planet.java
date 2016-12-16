@@ -23,16 +23,16 @@ public class Planet extends CelestialBody {
     
     private int size;
     private Habitability habitability;
-    private EnumSet<Building> building;
+    private EnumSet<Building> buildings;
     
     /**
      * Creates the planet from the given properties
      * @param body
      * @param id 
      */
-    public Planet(Properties body, String id) {
+    public Planet(Properties body, String id, Map<String, Properties> currentSystemState) {
         super(id);
-        building = EnumSet.noneOf(Building.class);
+        buildings = EnumSet.noneOf(Building.class);
         for (Map.Entry<Object, Object> entry : body.entrySet()) {
             String key = (String) entry.getKey();
             
@@ -41,7 +41,7 @@ public class Planet extends CelestialBody {
             } else if ("habitability".equals(key)) {
                 habitability = Habitability.valueOf((String) entry.getValue());
             } else if (key.startsWith("building")) {
-                building.add(Building.valueOf((String) entry.getValue()));
+                buildings.add(Building.valueOf((String) entry.getValue()));
             } else {
                 LOG.log(Level.INFO, "{0} Not Treated", key);
             }
@@ -59,6 +59,10 @@ public class Planet extends CelestialBody {
             });
             sprite = planet;
         }
+    }
+    
+    public boolean hasBuilding(Building building){
+        return buildings.contains(building);
     }
     
 }

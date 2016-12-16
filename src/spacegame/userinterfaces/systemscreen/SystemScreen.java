@@ -11,6 +11,7 @@ import java.util.logging.Logger;
 import javafx.animation.AnimationTimer;
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
@@ -42,11 +43,13 @@ public class SystemScreen extends ReachStartScreen{
 
     private SceneAnimator sceneAnimation;
 
-    private BubbleSystem currentSystem;
+//    private BubbleSystem currentSystem;
 
     private SpaceGame mainTheater;
     
     private final MovingBackground background;
+    
+    private SystemPane currentSystem;
 
     private Ship ship;
 
@@ -168,16 +171,13 @@ public class SystemScreen extends ReachStartScreen{
      * Set the current system to the specified system and 
      * draws the system on the scene
      * will need to change the constructions here to separate the drawings with the details
-     * Also starts the animation
      * @param system 
      */
     public void loadSystem(BubbleSystem system) {
-        if (currentSystem != system) {
-            currentSystem = system;
-            fullSystemArea.getChildren().add(currentSystem.getNode(mainTheater));
-
-            ship.getNode().toFront();
-        }
+        ObservableList<Node> children = fullSystemArea.getChildren();
+        children.remove(currentSystem);
+        currentSystem = new SystemPane(system, mainTheater);
+        children.add(currentSystem);
     }
 
     /**

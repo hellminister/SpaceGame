@@ -29,6 +29,7 @@ public class PlayerInfo implements Serializable {
     private Gender gender;
     private Stardate currentDate;
 
+    // move this to game state
     private String currentSystem;
 
     /**
