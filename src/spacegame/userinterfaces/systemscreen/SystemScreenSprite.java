@@ -5,7 +5,11 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
-import javafx.beans.property.DoubleProperty;
+
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.scene.Node;
+
+import java.util.Set;
 
 /**
  *
@@ -13,7 +17,12 @@ import javafx.beans.property.DoubleProperty;
  */
 public interface SystemScreenSprite {
     
-    DoubleProperty posXProperty();
-    DoubleProperty posYProperty();
-    
+    ReadOnlyDoubleProperty posXProperty();
+    ReadOnlyDoubleProperty posYProperty();
+
+    boolean needsRealTimeUpdate();
+
+    Set<UIAction> getAcceptableActions();
+
+    Node getNode();
 }

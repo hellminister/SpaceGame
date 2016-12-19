@@ -5,6 +5,10 @@
  */
 package spacegame.world.player;
 
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.ReadOnlyLongProperty;
+import javafx.beans.property.SimpleLongProperty;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,17 +19,17 @@ import java.util.logging.Logger;
  *
  * @author user
  */
-public class Stardate implements Serializable {
+public class StarDate implements Serializable {
 
-    private static final Logger LOG = Logger.getLogger(Stardate.class.getName());
+    private static final Logger LOG = Logger.getLogger(StarDate.class.getName());
     private static final long serialVersionUID = 1L;
 
-    private long date;
+    private transient LongProperty date;
 
     /**
      * Creates a new stardate starting on the first game day
      */
-    public Stardate() {
+    public StarDate() {
         this(0);
     }
 
@@ -33,8 +37,8 @@ public class Stardate implements Serializable {
      * creates a new stardate starting at the specified date
      * @param date 
      */
-    public Stardate(long date) {
-        this.date = date;
+    public StarDate(long date) {
+        this.date = new SimpleLongProperty(date);
     }
     
     /**
@@ -45,24 +49,28 @@ public class Stardate implements Serializable {
         if (nbDay < 0){
             throw new IllegalArgumentException("Cannot add a negative number of days : " + nbDay);
         }
-        date += nbDay;
+        date.set(date.get()+nbDay);
     }
 
     private void writeObject(ObjectOutputStream s) throws IOException {
         s.defaultWriteObject();
 
-        s.writeLong(date);
+        s.writeLong(date.get());
     }
 
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
 
-        date = s.readLong();
+        date = new SimpleLongProperty(s.readLong());
+    }
+
+    public ReadOnlyLongProperty starDateProperty(){
+        return date;
     }
 
     @Override
     public String toString() {
-        return Long.toString(date);
+        return date.toString();
     }
 
 }

@@ -11,6 +11,6 @@ package spacegame.userinterfaces.systemscreen;
  */
 public enum UIAction {
     LANDING,
-    REAL_TIME_UPDATE,
+    NONE,
     ;
 }

@@ -43,8 +43,6 @@ public class SystemScreen extends ReachStartScreen{
 
     private SceneAnimator sceneAnimation;
 
-//    private BubbleSystem currentSystem;
-
     private SpaceGame mainTheater;
     
     private final MovingBackground background;
@@ -176,8 +174,9 @@ public class SystemScreen extends ReachStartScreen{
     public void loadSystem(BubbleSystem system) {
         ObservableList<Node> children = fullSystemArea.getChildren();
         children.remove(currentSystem);
-        currentSystem = new SystemPane(system, mainTheater);
+        currentSystem = new SystemPane(system, this);
         children.add(currentSystem);
+        ship.getNode().toFront();
     }
 
     /**
@@ -207,13 +206,13 @@ public class SystemScreen extends ReachStartScreen{
         @Override
         public void handle(long now) {
             toAnimate.moveSprites();
-
             nbFrame++;
             long secs = now - last;
             if (secs > NANOSECONDS_IN_A_SECOND) {
                 last = now;
                 LOG.log(Level.INFO, "{0} secs fps : {1}", new Object[]{(double) secs / NANOSECONDS_IN_A_SECOND, nbFrame});
                 nbFrame = 0;
+
             }
         }
     }

@@ -8,7 +8,7 @@ package spacegame.userinterfaces.planetscreen;
 import javafx.scene.layout.StackPane;
 import spacegame.SpaceGame;
 import spacegame.userinterfaces.ReachStartScreen;
-import spacegame.world.systems.celestialbodies.CelestialBody;
+import spacegame.world.systems.CelestialBody;
 
 /**
  *

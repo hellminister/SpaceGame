@@ -10,15 +10,23 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+
+import spacegame.world.player.StarDate;
 import spacegame.world.systems.BubbleSystem;
 
 /**
- *
+ * Made this a singleton to reduce coupling of classes
+ * And anyway this was going to be a final field in the main game class
+ * as there is supposed to be only 1 such instance
  * @author user
  */
 public class GameWorld {
 
     private static final Logger LOG = Logger.getLogger(GameWorld.class.getName());
+    private static GameWorld theGameWorld;
+    static {
+        theGameWorld = new GameWorld();
+    }
 
     private GameState currentState;
 
@@ -29,10 +37,14 @@ public class GameWorld {
     /**
      * Initialize the gameWorld
      */
-    public GameWorld() {
+    private GameWorld() {
         initialGameState = new ReadOnlyGameData();
 
         currentState = null;
+    }
+
+    public static GameWorld accessGameWorld(){
+        return theGameWorld;
     }
 
     public void setPlayerState(GameState gameData) {
@@ -50,39 +62,32 @@ public class GameWorld {
 
     private void populateSystemList() {
         Map<String, Properties> currentSystemState = combine(initialGameState.getSystemsInitialStates(), currentState.getSystemsModifications());
-        systemList = currentSystemState.entrySet().stream().filter(t -> {
-                return "System".equals(t.getValue().getProperty("class"));
-        }).map(t -> {
-                return new BubbleSystem(t, currentSystemState);
-        }).collect(Collectors.toConcurrentMap(t -> {
-                return t.getName();
-        }, t -> {
-                return t;
-        }));
+        systemList = currentSystemState.entrySet().stream()
+                .filter(t -> "System".equals(t.getValue().getProperty("class")))
+                .map(t -> new BubbleSystem(t, currentSystemState))
+                .collect(Collectors.toConcurrentMap(t -> t.getName(),
+                                                    t -> t));
     }
 
     private static Map<String, Properties> combine(final Map<String, Properties> systemsInitialStates, final Map<String, Properties> systemsModifications) {
         Map<String, Properties> combined = new HashMap<>();
         systemsInitialStates.forEach((t, u) -> {
             Properties p = new Properties();
-            u.forEach((t2, u2) -> {
-                p.setProperty((String) t2, (String) u2);
-            });
+            u.forEach((t2, u2) -> p.setProperty((String) t2, (String) u2));
             combined.put(t, p);
         });
 
         systemsModifications.forEach((componentId, componentModifications) -> {
-            combined.merge(componentId, componentModifications, GameWorld::remapingFunction);
+            combined.merge(componentId, componentModifications, GameWorld::remappingFunction);
         });
 
         return combined;
     }
 
-    private static Properties remapingFunction(Properties componentOldProperties, Properties componentToMerge) {
+    private static Properties remappingFunction(Properties componentOldProperties, Properties componentToMerge) {
         Properties props;
         if (componentOldProperties == null) {
             props = new Properties(componentToMerge);
-            return props;
         } else if (componentToMerge.containsKey("deleted")) {
             props = null;
         } else {
@@ -96,6 +101,10 @@ public class GameWorld {
             });
         }
         return props;
+    }
+
+    public StarDate getCurrentStarDate(){
+        return getPlayerState().getPlayerState().getStarDate();
     }
 
 }

@@ -3,15 +3,15 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.system2;
+package spacegame.world.systems;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Set;
-import spacegame.world.system2.datablocks.InfoType;
+import spacegame.world.systems.datablocks.InfoType;
 
-import static spacegame.world.system2.datablocks.InfoType.*;
+import static spacegame.world.systems.datablocks.InfoType.*;
 
 /**
  *
@@ -19,8 +19,8 @@ import static spacegame.world.system2.datablocks.InfoType.*;
  */
 public enum BaseBodyType {
     STAR(BASIC, SPRITE, ENERGY_EMMITING),
-    PLANETOID(BASIC, LANDABLE, ORBITING, SPRITE),
-    GASOUS_PLANETOID(BASIC, ORBITING, SPRITE),
+    PLANETOID(BASIC, LANDABLE, SPRITE),
+    GASOUS_PLANETOID(BASIC, SPRITE),
     WARP_GATE(BASIC, SPRITE, GATE),
     ASTEROID(BASIC, SPRITE, MINABLE, FIELD),
     SPACE_STATION(BASIC, SPRITE, OWNED, LANDABLE, ARTIFICIAL),

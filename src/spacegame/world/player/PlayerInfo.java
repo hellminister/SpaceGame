@@ -27,7 +27,7 @@ public class PlayerInfo implements Serializable {
     private String firstName;
     private Species species;
     private Gender gender;
-    private Stardate currentDate;
+    private StarDate currentDate;
 
     // move this to game state
     private String currentSystem;
@@ -44,7 +44,7 @@ public class PlayerInfo implements Serializable {
         this.firstName = firstName;
         this.species = species;
         this.gender = gender;
-        currentDate = new Stardate();
+        currentDate = new StarDate();
         currentSystem = "test";
     }
 
@@ -66,7 +66,7 @@ public class PlayerInfo implements Serializable {
         firstName = s.readUTF();
         species = (Species) s.readObject();
         gender = (Gender) s.readObject();
-        currentDate = (Stardate) s.readObject();
+        currentDate = (StarDate) s.readObject();
         currentSystem = s.readUTF();
     }
 
@@ -84,5 +84,9 @@ public class PlayerInfo implements Serializable {
 
     public void setCurrentSystem(String system) {
         currentSystem = system;
+    }
+
+    public StarDate getStarDate() {
+        return currentDate;
     }
 }

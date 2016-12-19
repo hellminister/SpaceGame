@@ -15,7 +15,6 @@ import spacegame.userinterfaces.planetscreen.PlanetScreen;
 import spacegame.userinterfaces.systemscreen.SystemScreen;
 import spacegame.world.GameState;
 import spacegame.world.GameWorld;
-import spacegame.world.systems.celestialbodies.CelestialBody;
 
 /**
  *
@@ -31,8 +30,6 @@ public class SpaceGame extends Application {
     
     private final PlanetScreen planetScreen;
 
-    private final GameWorld gameWorld;
-
     private Stage stage;
     
     private ReachStartScreen comesFrom;
@@ -41,7 +38,6 @@ public class SpaceGame extends Application {
      * main game constructor that instanciates all the differents scenes
      */
     public SpaceGame() {
-        gameWorld = new GameWorld();
 
         startScreen = new StartScreen(this);
         systemScreen = new SystemScreen(this);
@@ -78,11 +74,11 @@ public class SpaceGame extends Application {
     }
 
     public void setPlayerState(GameState gameData) {
-        gameWorld.setPlayerState(gameData);
+        GameWorld.accessGameWorld().setPlayerState(gameData);
     }
 
     public GameState getPlayerState() {
-        return gameWorld.getPlayerState();
+        return GameWorld.accessGameWorld().getPlayerState();
     }
 
     /**
@@ -90,8 +86,8 @@ public class SpaceGame extends Application {
      * @return 
      */
     public boolean changeSceneToSystemScreen() {
-        systemScreen.loadSystem(gameWorld.getSystem());
-        LOG.log(Level.INFO, "Switch to System Screen for {0}", gameWorld.getSystem().getName());
+        systemScreen.loadSystem(GameWorld.accessGameWorld().getSystem());
+        LOG.log(Level.INFO, "Switch to System Screen for {0}", GameWorld.accessGameWorld().getSystem().getName());
 
         stage.setScene(systemScreen);
         systemScreen.giveFocusBack();
@@ -120,12 +116,6 @@ public class SpaceGame extends Application {
         comesFrom = previous;
 
         return true;
-    }
-
-    public void changeSceneToPlanetScreen(CelestialBody t) {
-        LOG.log(Level.INFO, "Switch to Planet Screen for {0}", t.getId());
-        
-        planetScreen.loadPlanet(t);
     }
 
 }

@@ -3,10 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package spacegame.world.system2.datablocks;
+package spacegame.world.systems.datablocks;
+
+import spacegame.world.systems.BubbleSystem;
+import spacegame.world.systems.CelestialBody;
 
 import java.util.Properties;
-import spacegame.world.system2.BubbleSystem;
+import java.util.Set;
 
 /**
  *
@@ -24,7 +27,11 @@ public abstract class DataBlock {
         return dataBlockType;
     }
 
+    abstract Set<String> treatsInfo();
+
     public abstract Properties toProperties();
     
-    public abstract void treatProperty(String prop, BubbleSystem system);
+    public abstract void treatProperty(String prop, String value);
+
+    public abstract boolean checkIntegrity(BubbleSystem system, CelestialBody me);
 }
