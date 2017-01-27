@@ -9,7 +9,6 @@ import spacegame.userinterfaces.systemscreen.SystemScreenSprite;
 import spacegame.world.systems.datablocks.BasicDataBlock;
 import spacegame.world.systems.datablocks.InfoType;
 import spacegame.world.systems.datablocks.DataBlock;
-import spacegame.world.systems.datablocks.SpriteDataBlock;
 
 import java.util.EnumMap;
 import java.util.Properties;
@@ -23,10 +22,10 @@ public class CelestialBody {
 
     private static final Logger LOG = Logger.getLogger(CelestialBody.class.getName());
 
-    private EnumMap<InfoType, DataBlock> composingData;
+    private final EnumMap<InfoType, DataBlock> composingData;
 
 
-    private BaseBodyType type;
+    private final BaseBodyType type;
 
     private boolean isWellFormed = true;
 
@@ -46,7 +45,7 @@ public class CelestialBody {
             InfoType goesWith = InfoType.treats(property);
 
             if (goesWith != null) {
-                DataBlock block = composingData.computeIfAbsent(goesWith, infoType -> infoType.createBlock());
+                DataBlock block = composingData.computeIfAbsent(goesWith, InfoType::createBlock);
                 block.treatProperty(property, value);
             } else {
                 LOG.warning("property : " + property + " is not treated by any of the existing info blocks");
@@ -76,6 +75,6 @@ public class CelestialBody {
 
 
     public SystemScreenSprite getSystemScreenSprite() {
-        return ((SpriteDataBlock)composingData.get(InfoType.SPRITE));
+        return (SystemScreenSprite)composingData.get(InfoType.SPRITE);
     }
 }

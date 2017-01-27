@@ -5,7 +5,7 @@ import java.util.logging.Logger;
 /**
  * Created by user on 2016-12-18.
  */
-public class TrajectoryFactory {
+public final class TrajectoryFactory {
 
     private static final Logger LOG = Logger.getLogger(TrajectoryFactory.class.getName());
 

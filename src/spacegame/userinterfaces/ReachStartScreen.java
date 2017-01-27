@@ -20,7 +20,7 @@ public abstract class ReachStartScreen extends Scene {
      * {@link javafx.scene.Scene#Scene(javafx.scene.Parent) contructor}     * @param root 
      * @param root
      */
-    public ReachStartScreen(Parent root) {
+    protected ReachStartScreen(Parent root) {
         super(root);
     }
 

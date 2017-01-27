@@ -5,29 +5,30 @@
  */
 package spacegame.userinterfaces.systemscreen;
 
+import javafx.scene.input.KeyEvent;
 import spacegame.userinterfaces.ReachStartScreen;
-import java.util.logging.Level;
+
 import java.util.logging.Logger;
-import javafx.animation.AnimationTimer;
+
 import javafx.beans.property.DoublePropertyBase;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.ObservableList;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import spacegame.SpaceGame;
+import spacegame.userinterfaces.systemscreen.interfacepane.UserInterface;
 import spacegame.world.ships.Ship;
 import spacegame.world.systems.BubbleSystem;
+import spacegame.world.systems.CelestialBody;
 
 /**
- *
  * @author user
  */
-public class SystemScreen extends ReachStartScreen{
+public class SystemScreen extends ReachStartScreen {
 
     private static final Logger LOG = Logger.getLogger(SystemScreen.class.getName());
     private static final double DIMENSION = 100000000;
@@ -35,54 +36,49 @@ public class SystemScreen extends ReachStartScreen{
 
     private final ScrollPane viewport;
     private final StackPane fullSystemArea;
-    private final Rectangle sizing;
 
-    private final AnchorPane userInterface;
+    private final UserInterface userInterface;
 
     private final StackPane root;
-
-    private SceneAnimator sceneAnimation;
-
-    private SpaceGame mainTheater;
-    
     private final MovingBackground background;
-    
+    private SceneAnimator sceneAnimation;
+    private SpaceGame mainTheater;
     private SystemPane currentSystem;
 
     private Ship ship;
 
     /**
-     * Creates the System screen that will show the system and where the player 
+     * Creates the System screen that will show the system and where the player
      * will be able to control/move his ship
      * This is the only screen that has real time action.
-     * 
+     *
      * @param aThis the main game object
      */
     public SystemScreen(SpaceGame aThis) {
         super(new StackPane());
-        root = (StackPane) this.getRoot();
-        sceneAnimation = new SceneAnimator(this);
-        
+        root = (StackPane) getRoot();
+        sceneAnimation = new SceneAnimator();
+
         mainTheater = aThis;
 
         fullSystemArea = new StackPane();
-        
+
         background = new MovingBackground();
         fullSystemArea.getChildren().add(background);
         StackPane.setAlignment(background, Pos.CENTER);
-        
-        sizing = new Rectangle(DIMENSION, DIMENSION);
+
+        Rectangle sizing = new Rectangle(DIMENSION, DIMENSION);
         sizing.setFill(Color.TRANSPARENT);
 
         fullSystemArea.maxHeightProperty().bind(sizing.heightProperty());
         fullSystemArea.maxWidthProperty().bind(sizing.widthProperty());
-        
-        
+
 
         viewport = new ScrollPane(fullSystemArea) {
             @Override
             public void requestFocus() {
-                /* so theres no focus */ }
+                /* so theres no focus */
+            }
         };
 
         viewport.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -94,8 +90,8 @@ public class SystemScreen extends ReachStartScreen{
 
         viewport.prefViewportHeightProperty().bind(root.heightProperty());
         viewport.prefViewportWidthProperty().bind(root.widthProperty());
-        
-        userInterface = new AnchorPane();
+
+        userInterface = new UserInterface(this);
 
         root.getChildren().add(userInterface);
 
@@ -107,11 +103,45 @@ public class SystemScreen extends ReachStartScreen{
         ship = new Ship();
         Node nShip = ship.draw();
 
-        
-        
-        fullSystemArea.getChildren().add(nShip);
 
-        this.setOnKeyPressed(e -> {
+        fullSystemArea.getChildren().add(nShip);
+        userInterface.toFront();
+
+        setOnKeyActions();
+
+    }
+
+    private void setOnKeyActions() {
+        setOnKeyPressed(this::onKeyPressedActions);
+
+        setOnKeyReleased(this::onKeyReleasedActions);
+    }
+
+    private void onKeyReleasedActions(KeyEvent e) {
+        if (sceneAnimation.isStarted()) {
+            switch (e.getCode()) {
+                case UP:
+                    ship.stopAccelerate();
+                    break;
+                default:
+                    break;
+            }
+        }
+        switch (e.getCode()) {
+            case X:
+                mainTheater.changeSceneToStartScreen(this);
+                sceneAnimation.stop();
+                break;
+            case P:
+                sceneAnimation.toggle();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void onKeyPressedActions(KeyEvent e) {
+        if (sceneAnimation.isStarted()) {
             switch (e.getCode()) {
                 case RIGHT:
                     ship.turnRight();
@@ -128,22 +158,7 @@ public class SystemScreen extends ReachStartScreen{
                 default:
                     break;
             }
-        });
-
-        this.setOnKeyReleased(e -> {
-            switch (e.getCode()) {
-                case UP:
-                    ship.stopAccelerate();
-                    break;
-                case X:
-                    mainTheater.changeSceneToStartScreen(this);
-                    sceneAnimation.stop();
-                    break;
-                default:
-                    break;
-            }
-        });
-
+        }
     }
 
     /**
@@ -160,16 +175,17 @@ public class SystemScreen extends ReachStartScreen{
 
         viewport.vvalueProperty().bind(ship.getNode().translateYProperty().divide(halfY).add(FIFTY_PERCENT));
         viewport.hvalueProperty().bind(ship.getNode().translateXProperty().divide(halfX).add(FIFTY_PERCENT));
-        
+
         background.bindTo2(ship.posXProperty(), ship.posYProperty());
 
     }
 
     /**
-     * Set the current system to the specified system and 
+     * Set the current system to the specified system and
      * draws the system on the scene
      * will need to change the constructions here to separate the drawings with the details
-     * @param system 
+     *
+     * @param system System to be shown on the screen
      */
     public void loadSystem(BubbleSystem system) {
         ObservableList<Node> children = fullSystemArea.getChildren();
@@ -177,13 +193,7 @@ public class SystemScreen extends ReachStartScreen{
         currentSystem = new SystemPane(system, this);
         children.add(currentSystem);
         ship.getNode().toFront();
-    }
-
-    /**
-     * update all moving sprites location by 1 tick of time
-     */
-    public void moveSprites() {
-        ship.updatePosition();
+        userInterface.populateRadar(system, ship);
     }
 
     @Override
@@ -191,30 +201,8 @@ public class SystemScreen extends ReachStartScreen{
         sceneAnimation.start();
     }
 
-    private static class SceneAnimator extends AnimationTimer {
 
-        private static final int NANOSECONDS_IN_A_SECOND = 1000000000;
-        private final SystemScreen toAnimate;
-
-        private long last;
-        private int nbFrame;
-
-        SceneAnimator(SystemScreen ta) {
-            toAnimate = ta;
-        }
-
-        @Override
-        public void handle(long now) {
-            toAnimate.moveSprites();
-            nbFrame++;
-            long secs = now - last;
-            if (secs > NANOSECONDS_IN_A_SECOND) {
-                last = now;
-                LOG.log(Level.INFO, "{0} secs fps : {1}", new Object[]{(double) secs / NANOSECONDS_IN_A_SECOND, nbFrame});
-                nbFrame = 0;
-
-            }
-        }
+    public void selectedCelestialBody(CelestialBody bodies) {
+        LOG.info("selected : " + bodies.getId());
     }
-
 }

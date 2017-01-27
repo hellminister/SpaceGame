@@ -62,7 +62,7 @@ public class GameState implements Serializable {
     private void readObject(ObjectInputStream s) throws IOException, ClassNotFoundException {
         s.defaultReadObject();
 
-        playerInfo = (spacegame.world.player.PlayerInfo) s.readObject();
+        playerInfo = (PlayerInfo) s.readObject();
         int nb = s.readInt();
         systemsModifications = new HashMap<>();
         String key;

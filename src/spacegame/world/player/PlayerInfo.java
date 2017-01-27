@@ -71,7 +71,7 @@ public class PlayerInfo implements Serializable {
     }
 
     public String getInfo() {
-        return firstName + " " + name + "\n" + gender + " " + species + "\n" + "In System : " + currentSystem + "\n" + currentDate.toString();
+        return firstName + " " + name + "\n" + gender + " " + species + "\n" + "In System : " + currentSystem + "\n" + currentDate.toLongString();
     }
 
     public String getFullName() {

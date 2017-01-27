@@ -21,8 +21,8 @@ public class BubbleSystem {
     private static final Logger LOG = Logger.getLogger(BubbleSystem.class.getName());
 
     private final String systemName;
-    private Map<String, CelestialBody> celestialBodies;
-    
+    private final Map<String, CelestialBody> celestialBodies;
+
     public BubbleSystem(Map.Entry<String, Properties> t, Map<String, Properties> currentSystemState){
         systemName = t.getKey();
         celestialBodies = new HashMap<>();

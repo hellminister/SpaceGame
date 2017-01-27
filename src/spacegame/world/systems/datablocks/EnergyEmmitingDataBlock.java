@@ -9,7 +9,11 @@ import spacegame.util.Utilities;
 import spacegame.world.systems.BubbleSystem;
 import spacegame.world.systems.CelestialBody;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /**
@@ -24,7 +28,7 @@ public class EnergyEmmitingDataBlock extends DataBlock {
 
     private static final Set<String> treatedProperties = Utilities.newUnmodifiableSet("energy_emission");
 
-    private Map<EnergyType, Strength> energies;
+    private final Map<EnergyType, Strength> energies;
 
 
     EnergyEmmitingDataBlock() {
@@ -50,23 +54,27 @@ public class EnergyEmmitingDataBlock extends DataBlock {
     public void treatProperty(String prop, String value) {
         switch (prop) {
             case "energy_emission":
-                String[] byType = value.split("#");
-                LOG.info("energy_emission " + value + " splitted " + Arrays.toString(byType));
-                for (String triplet : byType) {
-                    String[] values = triplet.split(",");
-                    LOG.info("a triplet " + triplet + " splitted " + Arrays.toString(values));
-                    energies.put(EnergyType.valueOf(values[ENERGY_TYPE_POS]),
-                            new Strength(Double.valueOf(values[ENERGY_INTENSITY_POS]), Double.valueOf(values[ENERGY_DEGRADATION_POS])));
-                }
+                fillEnergyTypes(value);
                 break;
             default:
                 LOG.warning("No treatment for property : " + prop + " with value : " + value);
         }
     }
 
+    private void fillEnergyTypes(String value) {
+        String[] byType = value.split("#");
+        LOG.info("energy_emission " + value + " splitted " + Arrays.toString(byType));
+        for (String triplet : byType) {
+            String[] values = triplet.split(",");
+            LOG.info("a triplet " + triplet + " splitted " + Arrays.toString(values));
+            energies.put(EnergyType.valueOf(values[ENERGY_TYPE_POS]),
+                    new Strength(Double.valueOf(values[ENERGY_INTENSITY_POS]), Double.valueOf(values[ENERGY_DEGRADATION_POS])));
+        }
+    }
+
     public double getEnergyStrength(EnergyType type, double distance) {
         Strength energyStrength = energies.get(type);
-        return energyStrength == null ? 0.0 : energyStrength.getStrength(distance);
+        return (energyStrength == null) ? 0.0 : energyStrength.getStrength(distance);
     }
 
 
@@ -75,7 +83,7 @@ public class EnergyEmmitingDataBlock extends DataBlock {
         return true;
     }
 
-    private static class Strength {
+    private static final class Strength {
         private double intensity;
         private double degradingRate;
 
@@ -85,7 +93,7 @@ public class EnergyEmmitingDataBlock extends DataBlock {
         }
 
         double getStrength(double distance) {
-            return Math.max((intensity - (degradingRate * Math.abs(distance))), 0.0);
+            return Math.max(intensity - (degradingRate * Math.abs(distance)), 0.0);
         }
 
     }

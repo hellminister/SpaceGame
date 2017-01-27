@@ -7,7 +7,7 @@ import java.util.Set;
 /**
  * Created by user on 2016-12-16.
  */
-public class Utilities {
+public final class Utilities {
 
     private Utilities(){
     }
@@ -19,11 +19,9 @@ public class Utilities {
      * @return
      */
     @SafeVarargs
-    public static <T> Set<T> newUnmodifiableSet( T... values){
+    public static <T> Set<T> newUnmodifiableSet(T... values){
         Set<T> set = new HashSet<>();
-        for (T v : values){
-            set.add(v);
-        }
+        Collections.addAll(set, values);
         return Collections.unmodifiableSet(set);
 
     }

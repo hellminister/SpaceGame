@@ -25,7 +25,7 @@ public enum InfoType {
     OWNED(OwnedDataBlock::new, OwnedDataBlock::treatsProperty),
     SPRITE(SpriteDataBlock::new, SpriteDataBlock::treatsProperty);
 
-    private static Map<String, InfoType> treatedProperties;
+    private static final Map<String, InfoType> treatedProperties;
 
     static {
         treatedProperties = new HashMap<>();

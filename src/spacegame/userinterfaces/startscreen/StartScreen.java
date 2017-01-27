@@ -18,7 +18,6 @@ import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -29,6 +28,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import spacegame.SpaceGame;
+import spacegame.userinterfaces.ImageLibrary;
 import spacegame.world.GameState;
 
 /**
@@ -39,7 +39,7 @@ public class StartScreen extends Scene {
 
     private static final Logger LOG = Logger.getLogger(StartScreen.class.getName());
     private static final int HEIGHT = 480;
-    private static final String BACK_IMAGE_FILE_PATH = "/resources/images/PIA17563-1920x1200.jpg";
+    private static final String BACK_IMAGE_FILE_PATH = "PIA17563-1920x1200.jpg";
     private static final String CREDIT_FILE = "src/resources/data/credits.txt";
 
     private static final int GRID_PANE_MENU_THIRD = 50;
@@ -68,7 +68,6 @@ public class StartScreen extends Scene {
     private static final int MAIN_INFOBOX_MIN_WIDTH = 200;
     private static final int MAIN_INFOBOX_X_TRANSLATE = 20;
 
-    private Image background;
     private ImageView backgroundPlate;
     private Pane backgroundImagePane;
 
@@ -78,7 +77,6 @@ public class StartScreen extends Scene {
     private Button credits;
 
     private VBox mainButtons;
-    private Insets padding;
 
     private StackPane mainPane;
 
@@ -106,7 +104,7 @@ public class StartScreen extends Scene {
 
         mainTheater = aThis;
 
-        root = (StackPane) this.getRoot();
+        root = (StackPane) getRoot();
         root.setStyle("-fx-background-color: black");
 
         createStartScreen();
@@ -181,8 +179,7 @@ public class StartScreen extends Scene {
     }
 
     private void createBackgroundImagePane() {
-        background = new Image(BACK_IMAGE_FILE_PATH);
-        backgroundPlate = new ImageView(background);
+        backgroundPlate = new ImageView(ImageLibrary.getImage(BACK_IMAGE_FILE_PATH));
         backgroundPlate.setPreserveRatio(true);
 
         backgroundPlate.setFitHeight(HEIGHT);
@@ -253,7 +250,7 @@ public class StartScreen extends Scene {
         });
 
         mainButtons = new VBox(MAIN_BUTTONS_VERTICAL_SPACING);
-        padding = new Insets(TOP_BUTTON_INSET, RIGHT_BUTTON_INSET, BOTTOM_BUTTON_INSET, LEFT_BUTTON_INSET);
+        Insets padding = new Insets(TOP_BUTTON_INSET, RIGHT_BUTTON_INSET, BOTTOM_BUTTON_INSET, LEFT_BUTTON_INSET);
         mainButtons.setPadding(padding);
         mainButtons.setAlignment(Pos.CENTER);
 

@@ -14,12 +14,15 @@ import spacegame.world.GameWorld;
 import spacegame.world.systems.BubbleSystem;
 import spacegame.world.systems.CelestialBody;
 
+import java.util.logging.Logger;
+
 /**
  *
  * @author user
  */
 public class OrbitingTrajectory implements Trajectory {
 
+    private static final Logger LOG = Logger.getLogger(OrbitingTrajectory.class.getName());
     private static final int ORBIT_PARENT_POSITION = 1;
     private static final int ORBIT_DISTANCE_POSITION = 2;
     private static final int ANGULAR_SPEED_POSITION = 3;
@@ -35,6 +38,8 @@ public class OrbitingTrajectory implements Trajectory {
         orbitParent = parts[ORBIT_PARENT_POSITION];
         orbitDistance = Double.valueOf(parts[ORBIT_DISTANCE_POSITION]);
         angularSpeed = Double.valueOf(parts[ANGULAR_SPEED_POSITION]);
+        posX = new SimpleDoubleProperty();
+        posY = new SimpleDoubleProperty();
     }
 
     @Override
@@ -51,12 +56,12 @@ public class OrbitingTrajectory implements Trajectory {
     public boolean checkIntegrity(BubbleSystem system, CelestialBody me) {
         boolean good = true;
 
-        if (orbitDistance < 0 || orbitParent == null){
+        if ((orbitDistance < 0) || (orbitParent == null)){
             good = false;
         } else {
             orbitParent = system.getName() + "." + orbitParent;
             CelestialBody bod = system.getCelestialBodyForName(orbitParent);
-            if (bod == null || bod == me){
+            if ((bod == null) || (bod == me)){
                 good = false;
             } else {
                 gravityCenter = bod;
@@ -68,15 +73,15 @@ public class OrbitingTrajectory implements Trajectory {
     }
 
     private void bindPositions() {
-        posX = new SimpleDoubleProperty();
+
         TranslationBinding tbX = new TranslationBinding(gravityCenter.getSystemScreenSprite().posXProperty(),
-                                     GameWorld.accessGameWorld().getCurrentStarDate().starDateProperty(),
+                                     GameWorld.accessGameWorld().getCurrentStarDate().fractionalDateProperty(),
                                      Math::cos);
         posX.bind(tbX);
 
-        posY = new SimpleDoubleProperty();
+
         TranslationBinding tbY = new TranslationBinding(gravityCenter.getSystemScreenSprite().posYProperty(),
-                GameWorld.accessGameWorld().getCurrentStarDate().starDateProperty(),
+                GameWorld.accessGameWorld().getCurrentStarDate().fractionalDateProperty(),
                 Math::sin);
         posY.bind(tbY);
     }
@@ -86,14 +91,14 @@ public class OrbitingTrajectory implements Trajectory {
         return false;
     }
 
-    private class TranslationBinding extends DoubleBinding {
+    private final class TranslationBinding extends DoubleBinding {
 
         private static final int FULL_CIRCLE = 360;
         private ReadOnlyDoubleProperty pos;
-        private ReadOnlyLongProperty date;
+        private ReadOnlyDoubleProperty date;
         private VectorAngleTransformation transformation;
 
-        private TranslationBinding(ReadOnlyDoubleProperty gravityCenterPos, ReadOnlyLongProperty starDate, VectorAngleTransformation trans) {
+        private TranslationBinding(ReadOnlyDoubleProperty gravityCenterPos, ReadOnlyDoubleProperty starDate, VectorAngleTransformation trans) {
             super.bind(gravityCenterPos, starDate);
             date = starDate;
             pos = gravityCenterPos;

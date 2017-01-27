@@ -24,7 +24,7 @@ import spacegame.world.player.Species;
  *
  * @author user
  */
-public class MiddlePane {
+class MiddlePane {
 
     private static final int INFOBOX_MAX_HEIGHT = 288;
     private static final int INFOBOX_PREF_HEIGHT = 288;
@@ -65,7 +65,7 @@ public class MiddlePane {
      *
      * @param sS
      */
-    public MiddlePane(StartScreen sS) {
+    MiddlePane(StartScreen sS) {
         startScreen = sS;
 
         userAnswer = new TextInputDialog();
@@ -102,7 +102,7 @@ public class MiddlePane {
         setMiddleButtonSizings(selectPlayer);
         selectPlayer.setOnAction(event -> {
             String selected = infoBox2.getSelectionModel().getSelectedItem();
-            if (selected != null && !selected.isEmpty()) {
+            if ((selected != null) && !selected.isEmpty()) {
                 playerList.selectPlayer(selected);
                 startScreen.setPlayerInfo(playerList.load());
 
@@ -114,7 +114,7 @@ public class MiddlePane {
         setMiddleButtonSizings(acLoadGame);
         acLoadGame.setOnAction(event -> {
             String selected = infoBox2.getSelectionModel().getSelectedItem();
-            if (selected != null && !selected.isEmpty()) {
+            if ((selected != null) && !selected.isEmpty()) {
                 startScreen.setPlayerInfo(playerList.loadSavedGame(selected));
             }
         });
@@ -182,7 +182,7 @@ public class MiddlePane {
         userAnswer.setContentText(question);
         userAnswer.getEditor().clear();
         Optional<String> result = userAnswer.showAndWait();
-        return result.get();
+        return result.orElse("");
     }
 
     private void setMiddleButtonSizings(Button btn) {

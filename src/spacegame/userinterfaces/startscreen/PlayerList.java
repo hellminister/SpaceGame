@@ -24,7 +24,7 @@ import spacegame.world.GameState;
  *
  * @author user
  */
-public class PlayerList {
+class PlayerList {
 
     private static final Logger LOG = Logger.getLogger(PlayerList.class.getName());
     private static final String PATH_URL = "src/resources/saves/";
@@ -47,7 +47,7 @@ public class PlayerList {
     /**
      * Loads the list of players for the game
      */
-    public PlayerList() {
+    PlayerList() {
 
         // Using a tree map to order the player's name alphabetically
         playerListMap = new TreeMap<>();

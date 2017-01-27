@@ -25,7 +25,7 @@ public class PlanetScreen extends ReachStartScreen {
      */
     public PlanetScreen(SpaceGame aThis) {
         super(new StackPane());
-        root = (StackPane) this.getRoot();
+        root = (StackPane) getRoot();
         parent = aThis;
 
     }

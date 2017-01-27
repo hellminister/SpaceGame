@@ -20,10 +20,10 @@ import spacegame.world.systems.BubbleSystem;
  * as there is supposed to be only 1 such instance
  * @author user
  */
-public class GameWorld {
+public final class GameWorld {
 
     private static final Logger LOG = Logger.getLogger(GameWorld.class.getName());
-    private static GameWorld theGameWorld;
+    private static final GameWorld theGameWorld;
     static {
         theGameWorld = new GameWorld();
     }
@@ -61,11 +61,12 @@ public class GameWorld {
     }
 
     private void populateSystemList() {
+        LOG.info("populating Systems");
         Map<String, Properties> currentSystemState = combine(initialGameState.getSystemsInitialStates(), currentState.getSystemsModifications());
         systemList = currentSystemState.entrySet().stream()
                 .filter(t -> "System".equals(t.getValue().getProperty("class")))
                 .map(t -> new BubbleSystem(t, currentSystemState))
-                .collect(Collectors.toConcurrentMap(t -> t.getName(),
+                .collect(Collectors.toConcurrentMap(BubbleSystem::getName,
                                                     t -> t));
     }
 

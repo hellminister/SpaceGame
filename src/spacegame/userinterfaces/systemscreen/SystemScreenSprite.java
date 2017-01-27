@@ -20,9 +20,9 @@ public interface SystemScreenSprite {
     ReadOnlyDoubleProperty posXProperty();
     ReadOnlyDoubleProperty posYProperty();
 
-    boolean needsRealTimeUpdate();
-
     Set<UIAction> getAcceptableActions();
 
     Node getNode();
+
+    double getSize();
 }

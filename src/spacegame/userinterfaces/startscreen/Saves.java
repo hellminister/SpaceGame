@@ -103,8 +103,8 @@ public class Saves {
         try (
                 InputStream file = new FileInputStream(filePath);
                 InputStream buffer = new BufferedInputStream(file);
-                ObjectInput input = new ObjectInputStream(buffer);) {
-            return (spacegame.world.GameState) input.readObject();
+                ObjectInput input = new ObjectInputStream(buffer)) {
+            return (GameState) input.readObject();
 
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
@@ -130,7 +130,7 @@ public class Saves {
         try (
                 OutputStream file = new FileOutputStream(fileName);
                 OutputStream buffer = new BufferedOutputStream(file);
-                ObjectOutput output = new ObjectOutputStream(buffer);) {
+                ObjectOutput output = new ObjectOutputStream(buffer)) {
             output.writeObject(playerInfo);
             reloadSaveList();
 

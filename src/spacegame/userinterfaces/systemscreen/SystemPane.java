@@ -8,6 +8,8 @@ package spacegame.userinterfaces.systemscreen;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.Set;
+
+import javafx.scene.Node;
 import javafx.scene.layout.StackPane;
 import spacegame.world.systems.BubbleSystem;
 import spacegame.world.systems.CelestialBody;
@@ -18,22 +20,19 @@ import spacegame.world.systems.CelestialBody;
  * 
  * @author user
  */
-public class SystemPane extends StackPane{
+class SystemPane extends StackPane{
     
     private EnumMap<UIAction, Set<SystemScreenSprite>> sprites;
-    private Set<SystemScreenSprite> realTimeUpdates;
-    private SystemScreen parent;
-    
-    public SystemPane(BubbleSystem system, SystemScreen attachedTo) {
+
+    SystemPane(BubbleSystem system, SystemScreen attachedTo) {
         sprites = new EnumMap<>(UIAction.class);
-        realTimeUpdates = new HashSet<>();
-        parent = attachedTo;
 
         for (CelestialBody bodies : system.getAllBodies()){
             SystemScreenSprite sprite = bodies.getSystemScreenSprite();
-            if (sprite.needsRealTimeUpdate()){
-                realTimeUpdates.add(sprite);
-            }
+            Node celBod = sprite.getNode();
+            celBod.setOnMouseClicked(event -> {
+                attachedTo.selectedCelestialBody(bodies);
+            });
             for (UIAction act : sprite.getAcceptableActions()){
                 sprites.computeIfAbsent(act, uiAction -> new HashSet<>()).add(sprite);
             }
@@ -41,5 +40,5 @@ public class SystemPane extends StackPane{
         }
 
     }
-    
+
 }

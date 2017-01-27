@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
  *
  * @author user
  */
-public class ReadOnlyGameData {
+class ReadOnlyGameData {
 
     private static final String STAR_SYSTEMS_FOLDER = "src/resources/data/systems/";
     private static final Logger LOG = Logger.getLogger(ReadOnlyGameData.class.getName());
@@ -40,7 +40,7 @@ public class ReadOnlyGameData {
     /**
      * Loads all the initial game states of the game
      */
-    public ReadOnlyGameData() {
+    ReadOnlyGameData() {
         systems = Collections.unmodifiableMap(loadSystems());
     }
     
@@ -80,11 +80,7 @@ public class ReadOnlyGameData {
                     .forEach(t -> {
                         String[] parts = t.split(":");
                         String id = systemName + (parts[ID_POSITION].isEmpty() ? "" : "." + parts[ID_POSITION]);
-                        Properties prop2 = objects.get(id);
-                        if (prop2 == null) {
-                            prop2 = new Properties();
-                            objects.put(id, prop2);
-                        }
+                        Properties prop2 = objects.computeIfAbsent(id, k -> new Properties());
                         prop2.setProperty(parts[KEY_POSITION], parts[VALUE_POSITION]);
                         LOG.info(t);
                         LOG.log(Level.INFO, "id1 {0} id {1} key {2} value {3}", new Object[]{parts[ID_POSITION], id, parts[KEY_POSITION], parts[VALUE_POSITION]});
