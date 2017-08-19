@@ -31,7 +31,7 @@ public class SpaceGame extends Application {
     private final PlanetScreen planetScreen;
 
     private Stage stage;
-    
+
     private ReachStartScreen comesFrom;
 
     /**
@@ -57,13 +57,7 @@ public class SpaceGame extends Application {
 
         stage.setMinHeight(primaryStage.getHeight());
         stage.setMinWidth(primaryStage.getWidth());
-
-        stage.setScene(systemScreen);
-
-        systemScreen.finishBindings();
-
-        stage.setScene(startScreen);
-
+        
     }
 
     /**
@@ -75,6 +69,8 @@ public class SpaceGame extends Application {
 
     public void setPlayerState(GameState gameData) {
         GameWorld.accessGameWorld().setPlayerState(gameData);
+        // TODO FIXME temporary hack to be able to load game
+        gameData.getPlayerState().createFleet();
     }
 
     public GameState getPlayerState() {

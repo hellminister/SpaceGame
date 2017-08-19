@@ -30,7 +30,7 @@ public class BubbleSystem {
         Properties props = t.getValue();
         for (String s : props.stringPropertyNames()){
             if ("contains".equals(s)){
-                String containedIds = props.getProperty((s),"");
+                String containedIds = props.getProperty(s,"");
                 for (String id : containedIds.split(",")) {
                     String key = systemName + "." + id.trim();
                     Properties body = currentSystemState.get(key);

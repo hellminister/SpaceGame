@@ -21,6 +21,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import spacegame.SpaceGame;
 import spacegame.userinterfaces.systemscreen.interfacepane.UserInterface;
+import spacegame.world.GameWorld;
+import spacegame.world.ships.Fleet;
 import spacegame.world.ships.Ship;
 import spacegame.world.systems.BubbleSystem;
 import spacegame.world.systems.CelestialBody;
@@ -100,11 +102,6 @@ public class SystemScreen extends ReachStartScreen {
 
         userInterface.setPickOnBounds(false);
 
-        ship = new Ship();
-        Node nShip = ship.draw();
-
-
-        fullSystemArea.getChildren().add(nShip);
         userInterface.toFront();
 
         setOnKeyActions();
@@ -192,8 +189,13 @@ public class SystemScreen extends ReachStartScreen {
         children.remove(currentSystem);
         currentSystem = new SystemPane(system, this);
         children.add(currentSystem);
-        ship.getNode().toFront();
+        Fleet playerFleet = GameWorld.accessGameWorld().getPlayerState().getPlayerState().getFleet();
+        ship = playerFleet.getFlagship();
+        fullSystemArea.getChildren().addAll(playerFleet.allShipSprites());
+        playerFleet.putToFront();
         userInterface.populateRadar(system, ship);
+        userInterface.toFront();
+        finishBindings();
     }
 
     @Override

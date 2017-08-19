@@ -12,13 +12,11 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import spacegame.userinterfaces.ImageLibrary;
-import spacegame.util.IncrementableDoubleBinding;
+import spacegame.util.GameTimeActivatedIncrementableDoubleBinding;
 import spacegame.util.SingleValueComplexFunctionDoubleBinding;
+import spacegame.world.ships.shipcontrols.ShipControl;
 
 /**
  *
@@ -41,8 +39,7 @@ public class Ship {
         fire = ImageLibrary.getImage("ship/rocket_straight_up_fire.png");
     }
 
-    private Node sprite;
-    private GraphicsContext gc;
+    private ShipSprite sprite;
 
     private final DoubleProperty posX;
     private final DoubleProperty posY;
@@ -60,8 +57,10 @@ public class Ship {
     private double turnSpeed;
 
     public Ship() {
-        acc = false;
 
+        ShipControl ai;
+
+        acc = false;
         accThruster = 0.1;
         turnSpeed = 2.0;
 
@@ -71,14 +70,14 @@ public class Ship {
 
         angleSin = new SingleValueComplexFunctionDoubleBinding(angle, () -> Math.sin(Math.toRadians(angle.get())));
 
-        speedX = new IncrementableDoubleBinding(0.0, () -> {
+        speedX = new GameTimeActivatedIncrementableDoubleBinding(0.0, () -> {
             if (acc) {
                 return accThruster * angleCos.get() * -1;
             }
             return 0;
         });
 
-        speedY = new IncrementableDoubleBinding(0.0, () -> {
+        speedY = new GameTimeActivatedIncrementableDoubleBinding(0.0, () -> {
             if (acc) {
                 return accThruster * angleSin.get() * -1;
             }
@@ -86,10 +85,12 @@ public class Ship {
         });
 
         posX = new SimpleDoubleProperty();
-        posX.bind(new IncrementableDoubleBinding(0.0, speedX::get));
+        posX.bind(new GameTimeActivatedIncrementableDoubleBinding(0.0, speedX::get));
 
         posY = new SimpleDoubleProperty();
-        posY.bind(new IncrementableDoubleBinding(0.0, speedY::get));
+        posY.bind(new GameTimeActivatedIncrementableDoubleBinding(0.0, speedY::get));
+
+        sprite = new ShipSprite(this, rocket, fire);
     }
 
     private void addAngle(double toAdd) {
@@ -104,28 +105,6 @@ public class Ship {
         addAngle(-turnSpeed);
     }
 
-    public Node draw() {
-        sprite = new Canvas(79, 414);
-
-        gc = ((Canvas) sprite).getGraphicsContext2D();
-        gc.drawImage(rocket, 0, 114);
-
-        sprite.translateXProperty().bind(posX);
-        sprite.translateYProperty().bind(posY);
-        sprite.rotateProperty().bind(angle.subtract(RIGHT_ANGLE));
-
-        sprite.setScaleX(0.5);
-        sprite.setScaleY(0.5);
-        
-        sprite.setPickOnBounds(false);
-        
-        sprite.setOnMouseClicked(event -> {
-            LOG.info("SHIP HAS BEEN CLICKED!");
-        });
-
-        return sprite;
-    }
-
     public ReadOnlyDoubleProperty posXProperty() {
         return posX;
     }
@@ -138,27 +117,27 @@ public class Ship {
         return angle;
     }
 
-    public Node getNode() {
+    public ShipSprite getNode() {
         return sprite;
     }
 
     public void accelerate() {
-        gc.drawImage(fire, 0, 300);
+        sprite.drawPropulsion();
         acc = true;
     }
 
     public void stopAccelerate() {
-        gc.clearRect(0, 300, 79, 114);
+        sprite.removePropulsion();
         acc = false;
     }
 
-    // broken
-    public void reverseDirection() {
-        double target = (Math.round(Math.toDegrees(Math.atan2(speedY.get(), speedX.get())))% FULL_ANGLE)*-1;
 
+    public void reverseDirection() {
+        double target = Math.round(Math.toDegrees(Math.atan2(speedY.get(), speedX.get())));
+        target = target < 0 ? target + FULL_ANGLE : target;
         double delta = (target - angle.get()) % FULL_ANGLE;
         double absDelta = Math.abs(delta);
-        LOG.log(Level.FINE, " target angle difference : {0}", delta);
+        LOG.log(Level.INFO, " target angle difference : " + delta + " - " + " - " + target + " - " + angle.get());
 
         if (absDelta > TOLERANCE) {
             if (absDelta >= turnSpeed) {

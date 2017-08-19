@@ -5,6 +5,9 @@
  */
 package spacegame.world.player;
 
+import spacegame.world.ships.Fleet;
+import spacegame.world.ships.Ship;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -27,7 +30,12 @@ public class PlayerInfo implements Serializable {
     private String firstName;
     private Species species;
     private Gender gender;
+
+    // move this to game state also
     private StarDate currentDate;
+    
+    // remove transient once the Ship class is fixed
+    private transient Fleet fleet;
 
     // move this to game state
     private String currentSystem;
@@ -46,6 +54,7 @@ public class PlayerInfo implements Serializable {
         this.gender = gender;
         currentDate = new StarDate();
         currentSystem = "test";
+        fleet = new Fleet();
     }
 
     private void writeObject(ObjectOutputStream s) throws IOException {
@@ -56,6 +65,8 @@ public class PlayerInfo implements Serializable {
         s.writeObject(species);
         s.writeObject(gender);
         s.writeObject(currentDate);
+        // will need to refactor ship to be able to save and load them
+        //    s.writeObject(fleet);
         s.writeUTF(currentSystem);
     }
 
@@ -67,7 +78,14 @@ public class PlayerInfo implements Serializable {
         species = (Species) s.readObject();
         gender = (Gender) s.readObject();
         currentDate = (StarDate) s.readObject();
+        // will need to refactor ship to be able to save and load them
+    //    fleet = (Fleet) s.readObject();
         currentSystem = s.readUTF();
+    }
+
+    // this will need to be removed once the Ship class is refactored
+    public void createFleet(){
+        fleet = new Fleet();
     }
 
     public String getInfo() {
@@ -88,5 +106,13 @@ public class PlayerInfo implements Serializable {
 
     public StarDate getStarDate() {
         return currentDate;
+    }
+
+    public Ship getFlagship(){
+        return fleet.getFlagship();
+    }
+
+    public Fleet getFleet() {
+        return fleet;
     }
 }

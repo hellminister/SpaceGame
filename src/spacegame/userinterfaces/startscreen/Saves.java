@@ -100,12 +100,11 @@ public class Saves {
      */
     public GameState loadSavedGame(String fileName) {
         String filePath = currentFilePath + fileName;
-        try (
-                InputStream file = new FileInputStream(filePath);
+        try (   InputStream file = new FileInputStream(filePath);
                 InputStream buffer = new BufferedInputStream(file);
                 ObjectInput input = new ObjectInputStream(buffer)) {
-            return (GameState) input.readObject();
 
+            return (GameState) input.readObject();
         } catch (IOException | ClassNotFoundException ex) {
             Logger.getLogger(Saves.class.getName()).log(Level.SEVERE, null, ex);
         }
